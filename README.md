@@ -15,3 +15,5 @@ stock-dashboard/
 │    ├── transformer.py   # klasa do transformacji DataFrame
 │    ├── visualizer.py    # wykresy
 │── tests/                # proste testy pytest
+
+m
