@@ -1,0 +1,18 @@
+# .gitattributes
+
+# Check if its a text file. End of line as LF to be in line with github
+# Locally it will be adjusted as per operating system
+* text=auto
+
+# Treat .py files as text files. LF will be always for each operating system
+*.py text eol=lf
+
+# Markdown
+*.md text
+
+# Binary images - don't touch the content
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg binary
