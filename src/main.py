@@ -7,28 +7,28 @@ def main():
     
     queue_of_requests=deque()
 
-    symbol_list=['SPY','MSFT','QQQ']
+    symbol_deque=deque(['MSFT','AMD','GOOGL'])
   
+    if len(symbol_deque) ==0:
+        raise ValueError('Missing Underlyin code')
+    else:
+        while symbol_deque:
+        # for code in symbol_deque:
 
-    while symbol_list:
-        for code in symbol_list:
-            if len(symbol_list) >= 1:
-                underlying_reuqestor=Underlying_request_details(
-                symbol= symbol_list.pop(0),
-                function="TIME_SERIES_DAILY",
-                outputsize="compact",
-                datatype="json")
-            else:
-                raise ValueError('Missing Underlyin code')
+            underlying_reuqestor=Underlying_request_details(
+            symbol= symbol_deque.popleft(),
+            function="TIME_SERIES_DAILY",
+            outputsize="compact",
+            datatype="json")
+            queue_of_requests.append(underlying_reuqestor)
 
-        queue_of_requests.append(underlying_reuqestor)
-        print(len(queue_of_requests))
+            
+
+
     
 
     while queue_of_requests:
-
         underlying_reuqestor=queue_of_requests.popleft()
-
         pipeline=UnderlyingBuilder(underlying_reuqestor).run_pipeline(underlying_reuqestor)
 
     
