@@ -5,7 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv  # module which allows to read .env file
 
 from api_request_alphavantage import Underlying_request_details
-from stock_data_frame import Underlying_data_frame
+from single_data_frame import Underlying_data_frame
 
 
 class Underlying_metrics:
@@ -66,6 +66,8 @@ class Underlying_metrics:
         # print('standard deviation')
 
         stand_dev=self.underlying_df['close'].std()
+        mean=self.underlying_df['close'].mean()
+        stand_pct=stand_dev / mean * 100
         start_date=self.underlying_df.index.min()
         end_date=self.underlying_df.index.max()
         print(f"Standard deviation for {self.symbol} is {stand_dev}")
@@ -73,7 +75,8 @@ class Underlying_metrics:
             'Start_date':[start_date],
             'End_date':[end_date],
             'Symbol':[self.symbol],
-            'Std_dev':[stand_dev]
+            'Std_dev':[stand_dev],
+            'Std_pct': [stand_pct]
         })
         return result_st_dev
 
