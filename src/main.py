@@ -12,8 +12,7 @@ def main():
     if len(symbol_deque) ==0:
         raise ValueError('Missing Underlyin code')
     else:
-        while symbol_deque:
-        # for code in symbol_deque:
+        while symbol_deque:#trigger it till is not empty
 
             underlying_reuqestor=Underlying_request_details(
             symbol= symbol_deque.popleft(),
@@ -29,8 +28,10 @@ def main():
 
     while queue_of_requests:
         underlying_reuqestor=queue_of_requests.popleft()
-        pipeline=UnderlyingBuilder(underlying_reuqestor).run_pipeline(underlying_reuqestor)
-
+        pipeline_builder=UnderlyingBuilder(underlying_reuqestor)
+        pipeline_builder.run_pipeline(underlying_reuqestor)
+        if not queue_of_requests: # will go through the loop only one time. 
+            pipeline_builder.run_merged_df_pipeline()
     
 
 if __name__=="__main__":
