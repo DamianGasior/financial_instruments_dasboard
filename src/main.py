@@ -7,7 +7,7 @@ def main():
     
     queue_of_requests=deque()
 
-    symbol_deque=deque(['MSFT','AMD','GOOGL'])
+    symbol_deque=deque(['PHYS','AEM','GDX','FNV'])
   
     if len(symbol_deque) ==0:
         raise ValueError('Missing Underlyin code')
