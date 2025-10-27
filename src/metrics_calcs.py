@@ -10,21 +10,30 @@ from single_data_frame import Underlying_data_frame
 
 class Underlying_metrics:
 
-    def __init__(self,underlying_request:Underlying_request_details,underlying_df:Underlying_data_frame):
+    def __init__(self,underlying_request:Underlying_request_details| None=None,underlying_df:Underlying_data_frame| None=None,example_df : Underlying_data_frame | None=None):
         # self.underlying_request=underlying_request
         self.symbol=underlying_request.symbol
         self.return_for_symbol='daily_return_'+self.symbol
-        self.close='close_'+self.symbol
-      
-        # print('pierwszy obiekty klasy "Underlying_metrics" ',type(self.underlying_request))
-        # print(self.underlying_request)
-
+        self.close=self.symbol
         self.underlying_df=underlying_df.to_dataframe()
-        # print('Second object of class  "Underlying_metrics" ',type(self.underlying_df))
     
 
     def __getattr__(self,name): # dunder method, it allows to treat the class instance as dataframe
         return getattr(self.underlying_df,name)
+    
+
+    def copy_df(self):
+        self.test=self.underlying_df.loc[:, [self.return_for_symbol]].copy()  # becasue we use [self.return_for_symbol] instead of this self.return_for_symbol, the copy is created as a dataframe with the name columns instead of a heading.
+                                                                        # additionaly , using copy() is safer becase you store this a seperate instance in memory
+        # print(type(test))
+        # print(test.head())
+        # chosen_columns.append(self.return_for_symbol)
+        # print(type(test))   
+        # test=test[chosen_columns]
+        # print(test.head())
+        self.test.rename(columns={self.return_for_symbol: self.symbol}, inplace=True)
+        # print(test.head())
+        return self.test
     
     def price_chng_perct(self):
         # return_for_symbol='daily_return_'+self.symbol
@@ -57,7 +66,7 @@ class Underlying_metrics:
  
         result_df=pd.DataFrame({
             'Date': [worst_date,best_date],
-            'Symbol':[stocks,stocks],
+            # 'Symbol':[stocks,stocks],
              self.close :[ close_price_on_worst, close_price_on_best],
             "Type": ["Worst", "Best"],
             "Return": [ worst_val, best_val]
@@ -87,4 +96,9 @@ class Underlying_metrics:
     #add average price, high and low for a sepcifc period, and the price for start date and end date. 
 
     # think somehting about Volume, and what does it mean ...
+
+    def calc_correlation(self):
+        self=self.corr()
+        return self
+
     

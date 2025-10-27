@@ -12,10 +12,10 @@ class Underlying_data_frame:
     def __init__(self, response_from_alpha,key_paremeter, underlying_request:Underlying_request_details):
         self.stock_symbol=underlying_request.symbol #class instance from Underlying_request_details
         self.response_from_alpha = response_from_alpha
-        self.close='close_'+ self.stock_symbol
+        self.close=self.stock_symbol
         self.transform(key_paremeter).set_date_as_index().column_rename(**{'1. open': 'open'},**{'2. high': 'high'},**{'3. low': 'low'},**{'4. close': self.close},**{'5. volume': 'volume'})
         self.leave_only_columns(self.close)  # in the future an option to the user can be enabled to choose from following columns ('open','high', 'low', 'close', 'volume')
-        self.add_new_columns() 
+        # self.add_new_columns() 
 
  
     def __getattr__(self,name): # dunder method, it allows to treat the class instance as dataframe
