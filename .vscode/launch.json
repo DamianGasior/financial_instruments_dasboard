@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Streamlit Debug",
+            "type": "python",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "app/streamlit_app.py"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Backend Debug (src/main.py)",
+            "type": "python",
+            "request": "launch",
+            "module": "src.main",                // tak jak "python -m src.main"
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",         // uruchamia z głównego folderu projektu
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}" // pozwala widzieć moduł src/
+            }
+        }
+    ]
+}
+
+
+
+// "module": "streamlit" → uruchamia Streamlit jak python -m streamlit
+
+// "args" → przekazuje run app/streamlit_app.py
+
+// "console": "integratedTerminal" → debugger używa terminala w VS Code
+
+// "justMyCode": false → pozwala debugować również pakiety w folderze src
