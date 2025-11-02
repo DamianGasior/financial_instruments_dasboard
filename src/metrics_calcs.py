@@ -4,8 +4,8 @@ from datetime import date
 from pathlib import Path
 from dotenv import load_dotenv  # module which allows to read .env file
 
-from api_request_alphavantage import Underlying_request_details
-from single_data_frame import Underlying_data_frame
+from src.api_request_alphavantage import Underlying_request_details
+from src.single_data_frame import Underlying_data_frame
 
 
 class Underlying_metrics:
@@ -13,7 +13,7 @@ class Underlying_metrics:
     def __init__(self,underlying_request:Underlying_request_details| None=None,underlying_df:Underlying_data_frame| None=None,example_df : Underlying_data_frame | None=None):
         # self.underlying_request=underlying_request
         self.symbol=underlying_request.symbol
-        self.return_for_symbol='daily_return_'+self.symbol
+        self.return_for_symbol=self.symbol+'_prct_return'
         self.close=self.symbol
         self.underlying_df=underlying_df.to_dataframe()
     

@@ -4,7 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv  # module which allows to read .env file
 
-from api_request_alphavantage import Underlying_request_details
+from src.api_request_alphavantage import Underlying_request_details
 
 
 
@@ -73,7 +73,7 @@ class Underlying_data_frame:
 
 
     def __str__(self):
-        return str(self.response_from_alpha.head(15))
+        return str(self.response_from_alpha.head(25))
 
     def show_columns(self):
         # print(f'type to: {type(self.response_from_alpha)}')
