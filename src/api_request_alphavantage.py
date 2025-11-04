@@ -12,7 +12,7 @@ import pickle
 import os
 from dotenv import load_dotenv  # module which allows to read .env file
 
-#Frist file for getting the data
+# Frist file for getting the data
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -27,12 +27,11 @@ API_KEY = os.getenv(
 )  # use the variable loaded from the line above
 
 BASE_DIR_raw = Path(__file__).parent
-DATA_DIR=BASE_DIR/'data'
-RAW_DATA=DATA_DIR / 'raw'  # ...Python/financial_instruments_dasboard/src/data/raw
+DATA_DIR = BASE_DIR / "data"
+RAW_DATA = DATA_DIR / "raw"  # ...Python/financial_instruments_dasboard/src/data/raw
 
 
 # print(RAW_DATA)
-
 
 
 # print(BASE_DIR)
@@ -101,8 +100,6 @@ class Underlying_request_details:
         else:
             print(f"Response failed : {resp.status_code}")
 
-
-
         response = resp.json()
 
         # print(json.dumps(response,indent=4)) # to see what is the json format response
@@ -145,4 +142,3 @@ class Underlying_request_details:
         # Dane JSON odpowiedzi
 
         conn.close()
-
