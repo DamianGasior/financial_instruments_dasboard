@@ -5,7 +5,7 @@ from collections import deque
 import streamlit as st
 
 
-st.session_state.my_list=['AEM','PHYS']
+# st.session_state.my_list=['AEM','PHYS']
 
 def main():
     if st.session_state.my_list:
@@ -38,8 +38,8 @@ def main():
             underlying_reuqestor=queue_of_requests.popleft()
             pipeline_builder=UnderlyingBuilder(underlying_reuqestor)
             pipeline_builder.run_pipeline(underlying_reuqestor)
-            if not queue_of_requests: # will go through the loop only one time. 
-                pipeline_builder.run_merged_df_pipeline()
+            # if not queue_of_requests: # will go through the loop only one time. 
+            #     pipeline_builder.run_merged_df_pipeline()
     else:
         st.warning("No data found — please poput and submit the data again")
     

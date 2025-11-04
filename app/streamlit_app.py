@@ -3,7 +3,7 @@ import streamlit as st
 import sys # allows to access to  information used by interpreter , in this case will be used to  point out to the src folder
 import os # allows to interact with the operating system , like checking the paths , catalogs and so on 
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
-
+import pandas as pd
 
 # Dodaj folder główny projektu do sys.path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -13,6 +13,7 @@ if PROJECT_ROOT not in sys.path:
 from src.api_request_alphavantage import Underlying_request_details
 from src.main import main
 from src import pipeline
+from src import multiple_data_frame
 
 # os.path.dirname(__file__) - location of the folder where the streamlit_app.py file is , in this case its : app/
 # os.path.join(..., '..', 'src') - moving one level higher and pointing out to 'src'
@@ -50,7 +51,7 @@ if submitted and new_item_upper:
 with st.sidebar:
     st.title("🔣:small[Your symbols ]")
     # st.session_state.my_list
-    st.markdown("Chosen symbols are : ")
+    st.markdown("Available symbols: ")
     for symbol in st.session_state.my_list:
         st.markdown(f'- {symbol}')
     # selected_symbols=st.multiselect(
@@ -59,7 +60,7 @@ with st.sidebar:
 st.markdown("Once you are completed , please  hit **Submit button**")
 
 
-# button=st.button("Submit button") # create a button to start the whole flow 
+
 
 
 if st.session_state.my_list :
@@ -84,11 +85,35 @@ if len(st.session_state.selected_symbols) ==1 :
     for symbol in st.session_state.selected_symbols:
         symbol=st.session_state.selected_symbols[0]
         df=pipeline.multiple_data_frame.get_the_right_df(symbol)
-        st.dataframe(df,use_container_width=True)
-elif len(st.session_state.selected_symbols) >1 :
-        for symbol in st.session_state.selected_symbols:
-            df=pipeline.multiple_data_frame.get_the_right_df(symbol)       #multiple_data_frame_creator(symbol)
-            st.dataframe(df,use_container_width=True)
+        st.dataframe(df,width='stretch')
+
+elif len(st.session_state.selected_symbols) > 1:
+    # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
+    single_stock_prices = pipeline.multiple_dicts.get_the_right_dict('single_prices')
+
+    
+    stock_dict = single_stock_prices.single_stock_with_prices # tihs is now a dict, where I can iterate using symbols
+    
+    #Below for dev / debug purpose
+    # print(type(stock_dict))
+    # for key,value in stock_dict.items():
+    #     print(f'key {key}, value : {value}')
+    
+
+    # collect all the symbols  > dataframes  chosen by the user
+    df_list = []
+    for symbol in st.session_state.selected_symbols:
+        # stock_dict = single_stock_prices.single_stock_with_prices
+        if symbol in stock_dict:
+            df_list.append(stock_dict[symbol])
+
+    # merge those by columns
+    if df_list:
+        result = pd.concat(df_list, axis=1)
+        st.dataframe(result, width='stretch')
+    else:
+        st.warning("No data for symbols")
+
 
 else:
     pass
