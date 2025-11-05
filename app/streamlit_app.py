@@ -15,6 +15,7 @@ from src.api_request_alphavantage import Underlying_request_details
 from src.main import main
 from src import pipeline
 from src import multiple_data_frame
+from src import metrics_calcs
 
 # os.path.dirname(__file__) - location of the folder where the streamlit_app.py file is, in this case its : app/
 # os.path.join(..., '..', 'src') - moving one level higher and pointing out to 'src'
@@ -74,6 +75,9 @@ if st.session_state.submit_button:  # checking if submit button exists
             key="symbols_multiselect",
         )
 
+
+
+
 print("st.session_state.selected_symbols", st.session_state.selected_symbols)
 print("st.multiselect", st.multiselect)
 
@@ -87,7 +91,7 @@ elif len(st.session_state.selected_symbols) > 1:
     # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
     single_stock_prices = pipeline.multiple_dicts.get_the_right_dict("single_prices")
     stock_dict = (
-        single_stock_prices.single_stock_with_prices
+        single_stock_prices.single_stock_data
     )  # tihs is now a dict, where I can iterate using symbols
 
     # Below for dev / debug purpose
@@ -95,26 +99,38 @@ elif len(st.session_state.selected_symbols) > 1:
     # for key,value in stock_dict.items():
     #     print(f'key {key}, value : {value}')
 
-    # collect all the symbols  > dataframes  chosen by the user
-
-    # to ponizejprzekazac do etod list merger a potem do metody kalkulacji korrelacji w metrics.
-    # uzyskac rezultat i go wyswetlic na st.dataframe
-    df_list = []
-    for symbol in st.session_state.selected_symbols:
-        # stock_dict = single_stock_prices.single_stock_with_prices
-        if symbol in stock_dict:
-            df_list.append(stock_dict[symbol])
-
+    my_symbols = st.session_state.selected_symbols
+    symbol_df_builder = pipeline.Dataframe_combine_builder()
+    df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
     # merge those by columns
     if df_list:
-        result = pd.concat(df_list, axis=1)
-        st.dataframe(result, width="stretch")
+        merged_df_one = pd.concat(df_list, axis=1)
+        print(merged_df_one)
+        st.dataframe(merged_df_one, width="stretch")
     else:
         st.warning("No data for symbols")
 
+#logic below for correlation
 
-else:
-    pass
+if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 2 :
+    show_correlation = st.sidebar.checkbox("Show correlation", value=False)
+    if show_correlation is True:
+        single_timeframe_returns = pipeline.multiple_dicts.get_the_right_dict('single_timeframe_returns')
+        timeframe_returns_dict = (single_timeframe_returns.single_stock_data)
+
+        my_symbols
+        symbol_df_builder = pipeline.Dataframe_combine_builder()
+        df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
+        # merge those by columns
+        if df_list:
+            merged_df_sec = pd.concat(df_list, axis=1)
+            correlation_builder = metrics_calcs.Underlying_metrics.calc_correlation(merged_df_sec)
+            st.markdown("Calculated correlation is:")
+            st.dataframe(correlation_builder, width="stretch")
+
+
+
+
     # st.data_editor(df, use_container_width=True, disabled=True)
 
 

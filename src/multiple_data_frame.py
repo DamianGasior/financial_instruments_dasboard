@@ -7,7 +7,7 @@ class Dataframe_combine_builder:
     def __init__(self, single_data_frame: Underlying_data_frame | None = None):
 
         self.set_of_df = []
-        self.single_stock_with_prices = {}
+        self.single_stock_data = {}
         self.dict_of_dict = {}
         self.single_df = []
         self.merged_list = []
@@ -17,22 +17,22 @@ class Dataframe_combine_builder:
         single_data_frame = single_data_frame.copy()
 
         if isinstance(single_data_frame, pd.DataFrame):
-            self.single_stock_with_prices[stock_symbol] = single_data_frame
-            return self.single_stock_with_prices
+            self.single_stock_data[stock_symbol] = single_data_frame
+            return self.single_stock_data
 
         else:
             self.single_data_frame = single_data_frame.to_dataframe()
-            self.single_stock_with_prices[stock_symbol] = self.single_data_frame
-            return self.single_stock_with_prices
+            self.single_stock_data[stock_symbol] = self.single_data_frame
+            return self.single_stock_data
 
     def add_dict_to_dcit(self, single_dict, name):
         self.dict_of_dict[name] = single_dict
         print(self.dict_of_dict)
         return self.dict_of_dict
 
-    # tbc if it will work for self.single_stock_with_prices={} and for  self.dict_of_dict={}
+    # tbc if it will work for self.single_stock_data={} and for  self.dict_of_dict={}
     def get_the_right_df(self, stock):
-        value = self.single_stock_with_prices[stock]
+        value = self.single_stock_data[stock]
         print(value)
         return value
 
@@ -68,9 +68,9 @@ class Dataframe_combine_builder:
             print(f"key is : {key}, -> value is :  {type(value)} ")
 
         print(
-            f"key length : {len(self.single_stock_with_prices.keys())}, value length : {len(self.single_stock_with_prices.values())}"
+            f"key length : {len(self.single_stock_data.keys())}, value length : {len(self.single_stock_data.values())}"
         )
-        for key1, value1 in self.single_stock_with_prices.values():
+        for key1, value1 in self.single_stock_data.values():
             print(f"key1 is : {key1} -> {type(value1)}")
 
     def __str__(self):
@@ -82,13 +82,19 @@ class Dataframe_combine_builder:
                 )
         return info
 
-    def list_merger(self, passed_dict, symbol):
-        # merged_list=[]
-        # request_for_df=self.multiple_data_frame_creator(name)
-        # corr_result=request_for_df.corr()
-        for symbol in passed_dict:
-            self.merged_list.append(passed_dict[symbol])
-        return self.merged_list
+    @staticmethod
+    def list_merger(passed_dict, list_of_symbols):
+        merged_list = []
+        for symbol in list_of_symbols:
+            if symbol not in passed_dict.keys():
+                break
+            elif symbol in passed_dict.keys():
+                value = passed_dict[symbol]
+                if any(df.equals(value) for df in merged_list):
+                    break
+                else:
+                    merged_list.append(passed_dict[symbol])
+        return merged_list
 
     def __getitem__(self, key):
         return getattr(self, key, None)

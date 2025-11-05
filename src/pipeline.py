@@ -53,7 +53,7 @@ class UnderlyingBuilder:
         print(data_frame_builder_corr.head())
         print(type(data_frame_builder_corr))
         corr_data_frame.add_to_dict(data_frame_builder_corr, self.stock_symbol)
-        multiple_dicts.add_dict_to_dcit(multiple_data_frame, 'single_daily_returns')
+        multiple_dicts.add_dict_to_dcit(multiple_data_frame, 'single_timeframe_returns')
 
         # worst_and_best=data_frame_builder_with_calcs.worst_and_best()
         # print(worst_and_best)

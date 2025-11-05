@@ -4,7 +4,7 @@ from collections import deque
 import streamlit as st
 
 
-st.session_state.my_list = ["AEM", "PHYS"]
+# st.session_state.my_list = ["AEM", "PHYS"]
 
 
 def main():
