@@ -36,6 +36,9 @@ RAW_DATA = DATA_DIR / "raw"  # ...Python/financial_instruments_dasboard/src/data
 
 # print(BASE_DIR)
 
+# class Symbol_search:
+#     def __init__(self,)
+
 
 class Underlying_request_details:
     cache_path = RAW_DATA / "alpha_cache"

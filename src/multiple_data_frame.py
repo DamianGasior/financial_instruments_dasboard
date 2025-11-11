@@ -6,11 +6,11 @@ from src.metrics_calcs import Underlying_metrics
 class Dataframe_combine_builder:
     def __init__(self, single_data_frame: Underlying_data_frame | None = None):
 
-        self.set_of_df = []
+        # self.set_of_df = []
         self.single_stock_data = {}
         self.dict_of_dict = {}
-        self.single_df = []
-        self.merged_list = []
+        # self.single_df = []
+        # self.merged_list = []
 
     def add_to_dict(self, single_data_frame, stock_symbol):
         # creating a copy so that in case are other operations done on single_data_frame, other columns added in this case I will see only prices
