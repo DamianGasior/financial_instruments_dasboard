@@ -60,6 +60,7 @@ class Underlying_data_frame:
             }...;
                   Since 'orient' is set to 'index', the outer dictionary keys (dates) become DataFrame rows (index).
         """
+        print(self.response_from_alpha)
         self.response_from_alpha = pd.DataFrame.from_dict(
             self.response_from_alpha[key_paremeter], orient
         )
@@ -113,3 +114,13 @@ class Underlying_data_frame:
     # this method helps to obtain by y any other requestor class the dataframe, when they will be hitting object_name.to_dataframe()
     def to_dataframe(self):
         return self.response_from_alpha
+
+    @staticmethod
+    def first_date(dataframe):
+        oldest_date = dataframe.index.min()
+        return oldest_date
+
+    @staticmethod
+    def last_date(dataframe):
+        newest_date = dataframe.index.max()
+        return newest_date

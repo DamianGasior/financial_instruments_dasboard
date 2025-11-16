@@ -98,3 +98,13 @@ class Dataframe_combine_builder:
 
     def __getitem__(self, key):
         return getattr(self, key, None)
+
+    @staticmethod
+    def list_concacenate(df_lists):
+        concac_lists = pd.concat(df_lists, axis=1).sort_index(ascending=False)
+        concac_lists = (
+            concac_lists.fillna(method="ffill").fillna(method="bfill")
+        )
+        return concac_lists
+
+  

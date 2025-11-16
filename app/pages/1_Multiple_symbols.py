@@ -21,6 +21,8 @@ from src.main import main
 from src import pipeline
 from src import multiple_data_frame
 from src import metrics_calcs
+from src import numpy_calcs
+from src import single_data_frame
 
 import altair as alt
 
@@ -48,22 +50,26 @@ if "show_correlation" not in st.session_state:
 if "relative_comparison" not in st.session_state:
     st.session_state.relative_comparison = False
 
+
+if "show_mean" not in st.session_state:
+    st.session_state.relative_comparison = False
+
+if "submit_button" not in st.session_state:
+    st.session_state.submit_button = False
+if "selected_symbols" not in st.session_state:
+    st.session_state.selected_symbols = []
+
+    # expand / add realtive_coparison
+
+if "my_list" not in st.session_state:
+    st.session_state.my_list = []
+
     # show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
 
 
 tab0, tab1, tab2, tab3 = st.tabs(["Enter symbol", "Prices", "Charts", "Metrics"])
 
 with tab0:
-
-    if "submit_button" not in st.session_state:
-        st.session_state.submit_button = False
-    if "selected_symbols" not in st.session_state:
-        st.session_state.selected_symbols = []
-
-        # expand / add realtive_coparison
-
-    if "my_list" not in st.session_state:
-        st.session_state.my_list = []
 
     with st.form("add_item_form", clear_on_submit=True):
         new_item = st.text_input("Enter a specfic stock symbol")
@@ -126,9 +132,8 @@ with tab1:
 
         # merge those by columns
         if df_list:
-            st.session_state.merged_df_one = pd.concat(df_list, axis=1)
-            print("sample_merged_list")
-            print(st.session_state.merged_df_one)
+            merged_lists = multiple_data_frame.Dataframe_combine_builder()
+            st.session_state.merged_df_one = merged_lists.list_concacenate(df_list)
             st.dataframe(st.session_state.merged_df_one, width="stretch")
         else:
             st.warning("No data for symbols")
@@ -151,6 +156,11 @@ with tab1:
                 show_correlation = st.sidebar.checkbox(
                     "Correlation", value=False, key="show_correlation"
                 )
+            if (
+                st.session_state.submit_button
+                and len(st.session_state.selected_symbols) >= 1
+            ):
+                show_mean = st.sidebar.checkbox("Mean", value=False, key="show_mean")
 
     # logic below for correlation calc and display
 
@@ -173,39 +183,39 @@ with tab2:
                 st.plotly_chart(fig, use_container_width=True)
 
     elif st.session_state.relative_comparison is True:
+        st.write("Still under development. Plesae be patient..")
+        pass
 
-        pass 
+    # below to be repalced in the future
+    # --- przykładowe dane ---
+    # przykładowe dane
+    # df = pd.DataFrame({
+    #     "Date": pd.date_range(start="2025-01-01", periods=7),
+    #     "Series_A": [100, 105, 102, 110, 115, 120, 125],
+    #     "Series_B": [200, 195, 198, 205, 210, 220, 230]
+    # })
 
-    # below to be repalced in the future 
-        # --- przykładowe dane ---
-        # przykładowe dane
-        # df = pd.DataFrame({
-        #     "Date": pd.date_range(start="2025-01-01", periods=7),
-        #     "Series_A": [100, 105, 102, 110, 115, 120, 125],
-        #     "Series_B": [200, 195, 198, 205, 210, 220, 230]
-        # })
+    # # przelicz na procenty względem pierwszej wartości
+    # df_relative = df.copy()
+    # for col in ["Series_A", "Series_B"]:
+    #     df_relative[col] = df[col] / df[col].iloc[0] * 100
 
-        # # przelicz na procenty względem pierwszej wartości
-        # df_relative = df.copy()
-        # for col in ["Series_A", "Series_B"]:
-        #     df_relative[col] = df[col] / df[col].iloc[0] * 100
+    # df_melted = df_relative.melt(id_vars="Date", var_name="Series", value_name="Value")
 
-        # df_melted = df_relative.melt(id_vars="Date", var_name="Series", value_name="Value")
+    # # --- wykres Altair z dokładnym zakresem dat ---
+    # chart = alt.Chart(df_melted).mark_line(point=True).encode(
+    #     x=alt.X('Date:T', scale=alt.Scale(domain=[df["Date"].min(), df["Date"].max()])),
+    #     y='Value:Q',
+    #     color='Series:N',
+    #     tooltip=['Date:T', 'Series:N', 'Value:Q']
+    # ).properties(
+    #     title="Relative Comparison (%)",
+    #     width=700,
+    #     height=400
+    # ).interactive()
 
-        # # --- wykres Altair z dokładnym zakresem dat ---
-        # chart = alt.Chart(df_melted).mark_line(point=True).encode(
-        #     x=alt.X('Date:T', scale=alt.Scale(domain=[df["Date"].min(), df["Date"].max()])),
-        #     y='Value:Q',
-        #     color='Series:N',
-        #     tooltip=['Date:T', 'Series:N', 'Value:Q']
-        # ).properties(
-        #     title="Relative Comparison (%)",
-        #     width=700,
-        #     height=400
-        # ).interactive()
-
-        # st.altair_chart(chart, use_container_width=True)
-        # ✅ Co robi powyższy fragment:
+    # st.altair_chart(chart, use_container_width=True)
+    # ✅ Co robi powyższy fragment:
 # # tradingview_html = f"""
 # <!-- TradingView Widget BEGIN -->
 # <div class="tradingview-widget-container">
@@ -240,12 +250,114 @@ with tab2:
 
 
 with tab3:
-    if st.session_state.show_correlation is True:
+
+    if len(st.session_state.selected_symbols) >= 1:
+
         single_timeframe_returns = pipeline.multiple_dicts.get_the_right_dict(
             "single_timeframe_returns"
         )
         timeframe_returns_dict = single_timeframe_returns.single_stock_data
+        print("dlugosc listy", len(timeframe_returns_dict))
+        for i in timeframe_returns_dict:
+            print(i)
+            print(type(i))
 
+        stock_dict = single_stock_prices.single_stock_data
+        # print(type(stock_dict))
+
+        # for key, value in stock_dict.items():
+        #     print(f"key is : {key}, value is : {value}")
+        #     print(type(key))
+        #     print(
+        #         type(value)
+        # )  # this is a dataframe, which can be used later for numpy()
+
+        # want to see for which symbols where the arrays built,
+        columns = st.session_state.merged_df_one.columns
+        # print(len(columns))
+        # print(columns[0])
+        # print(f"kolumny_to:{columns}")
+        merged_df_array = numpy_calcs.Numpy_metrics_calcs.to_numpy(
+            st.session_state.merged_df_one
+        )
+        calc_array = numpy_calcs.Numpy_metrics_calcs(merged_df_array)
+        len_of_selected_symbols = len(st.session_state.selected_symbols)
+
+        cols = st.columns(
+            len_of_selected_symbols
+        )  # this will  set the number of columns in the streamlit layout
+
+        for i, s in enumerate(st.session_state.selected_symbols):
+            with cols[i]:
+                # add here a function which will pull the start and end date frm the dataframe
+                st.markdown(f"### Stock symbol : {s}")
+
+                start_date = single_data_frame.Underlying_data_frame.first_date(
+                    st.session_state.merged_df_one
+                )
+                end_date = single_data_frame.Underlying_data_frame.last_date(
+                    st.session_state.merged_df_one
+                )
+
+                st.write(f"📅End date : {end_date} ")
+                st.write(f"📅Start date : {start_date} ")
+
+                last_price = calc_array.price_last(merged_df_array[:, i])
+                # st.write(f"Last price : {last_price}")
+                st.metric(label="Last close price", value=last_price)
+
+                price_min = calc_array.min_calc(merged_df_array[:, i])
+                # st.write(f"Min : {price_min}")
+                st.metric(label="Min", value=price_min)
+
+                price_max = calc_array.max_calc(merged_df_array[:, i])
+                # st.write(f"Max : {price_max}")
+                st.metric(label="Max", value=price_max)
+
+                price_mean = calc_array.mean_calc(merged_df_array[:, i])
+                # st.write(f"Mean : {price_mean}")
+                st.metric(label="Mean Price", value=price_mean)
+
+                mean_daily_return = calc_array.return_calcs_mean(merged_df_array[:, i])
+                # st.write(f"Mean daily return(%): {mean_daily_return}")
+                st.metric(label="Mean daily return", value=f'{mean_daily_return} %')
+
+                median_daily_return = calc_array.return_calcs_median(
+                    merged_df_array[:, i]
+                )
+                # st.write(f"Mean daily return(%): {mean_daily_return}")
+                st.metric(label="Median daily return(%)", value=median_daily_return)
+
+                return_min = calc_array.daily_return(merged_df_array[:, i])
+                return_min = calc_array.min_calc(return_min) * 100
+                # st.write(f"Min : {price_min}")
+                st.metric(label="Min daily return", value=f'{return_min} %')
+
+                return_max = calc_array.daily_return(merged_df_array[:, i])
+                print('test')
+                print(return_max)
+                return_max = calc_array.max_calc(return_max) * 100
+                # st.write(f"Min : {price_min}")
+                st.metric(label="Max daily return", value=f'{return_max} %')
+ 
+
+
+
+                cumulat_return = calc_array.cumulative_return(merged_df_array[:, i])
+                # st.write(f"Cumulative return for given period : {cumulat_return} %")
+                st.metric(
+                    label="Cumulative return for given period",
+                    value=f"{cumulat_return} %",
+                )
+
+        # for indeks, column in enumerate(cols):
+        #     #columns has a metric function which we can use in similar way like st.metric
+        #     column.metric(
+        #         label="Mean is ",
+        #         value=calc_mean
+        #         )
+
+    if st.session_state.show_correlation is True:
         # my_symbols
         symbol_df_builder = pipeline.Dataframe_combine_builder()
         df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
@@ -257,6 +369,7 @@ with tab3:
             )
             st.markdown("Calculated correlation is:")
             st.dataframe(correlation_builder, width="stretch")
+
 
 # if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 1:
 #     show_worst_best = st.sidebar.checkbox("Worst and Best", value=False)
