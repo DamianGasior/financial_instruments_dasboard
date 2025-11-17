@@ -23,6 +23,7 @@ from src import multiple_data_frame
 from src import metrics_calcs
 from src import numpy_calcs
 from src import single_data_frame
+from src.utils.main_utils import combined_lists
 
 import altair as alt
 
@@ -74,7 +75,11 @@ if "my_list" not in st.session_state:
     # show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
 
 
-tab0, tab1, tab2, tab3, tab4 = st.tabs(["Enter symbol", "Prices", "Charts", "Metrics","Benchamrk metrics"])
+st.session_state.my_benchmarks = ["SPY"]
+
+tab0, tab1, tab2, tab3, tab4 = st.tabs(
+    ["Enter symbol", "Prices", "Charts", "Metrics", "Benchamrk metrics"]
+)
 
 with tab0:
 
@@ -90,11 +95,24 @@ with tab0:
 
     st.markdown("Once you are completed , please  hit **Submit button**")
 
-    if st.session_state.my_list:
+    st.session_state.my_merged_list = combined_lists(
+        st.session_state.my_list, st.session_state.my_benchmarks
+    )
+    print("st.session_state.my_merged_list", st.session_state.my_merged_list)
+
+    # if st.session_state.my_list:
+
+    if (
+        st.session_state.my_merged_list
+    ):  # zmienic wystepowanie w calej reszcze w streamlit pliku
+
         if st.button("Submit", key="submit_btn"):
             # print("tutaj",st.session_state.my_list)
             st.session_state.submit_button = True
-            
+
+            # st.session_state.my_merged_list = combined_lists(st.session_state.my_list, st.session_state.my_benchmarks)
+            # print("st.session_state.my_merged_list", st.session_state.my_merged_list)
+
             main()
 
 with tab1:
@@ -378,8 +396,8 @@ with tab3:
 
 with tab4:
 
-    st.session_state.my_benchmarks = ['SPY']
-    st.write('dziala')
+    # st.session_state.my_benchmarks = ['SPY']
+    st.write("dziala")
 
     if st.session_state.submit_button:  # checking if submit button exists
         # pdb.set_trace()
@@ -391,6 +409,20 @@ with tab4:
                 key="symbols_multiselect_benchmarks",
             )
 
+    if (
+        st.session_state.submit_button
+        and len(st.session_state.selected_symbols) >= 1
+        and len(st.session_state.select_benchmarks) >= 1
+    ):
+        with st.sidebar:
+            st.title(":small[Benchamrk metrics]")
+            if (
+                st.session_state.submit_button
+                and len(st.session_state.selected_symbols) >= 2
+            ):
+                show_correlation_benchmark = st.sidebar.checkbox(
+                    "Correlation", value=False, key="show_correlation_benchmark"
+                )
 
 
 # if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 1:
