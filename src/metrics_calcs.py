@@ -102,9 +102,7 @@ class Underlying_metrics:
         )
         return result_st_dev
 
-    # add average price, high and low for a sepcifc period, and the price for start date and end date.
-
-    # think somehting about Volume, and what does it mean ...
+ 
     @staticmethod
     def calc_correlation(concac_df):
         corr_result = concac_df.corr()
