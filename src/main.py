@@ -9,20 +9,15 @@ import streamlit as st
 
 def main():
 
-#     def combined_lists(symbols_from_user, benchmarks):
-#         st.session_state.my_list = symbols_from_user + benchmarks
-#         return st.session_state.my_list
-    
-    
-
-    if st.session_state.my_list:
+    # if st.session_state.my_list:
+    if st.session_state.my_merged_list:
 
         print(st.session_state.my_list)
         queue_of_requests = deque()
         print("queue_of_requests", queue_of_requests)
 
         symbol_deque = deque(
-            st.session_state.my_list
+            st.session_state.my_merged_list
         )  #    symbol_deque=deque(['PHYS', 'AEM','GDX','FNV'])
         print("symbol_deque", symbol_deque)
         if len(symbol_deque) == 0:
