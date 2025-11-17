@@ -124,3 +124,7 @@ class Underlying_data_frame:
     def last_date(dataframe):
         newest_date = dataframe.index.max()
         return newest_date
+    
+
+
+    # https://finnhub.io/docs/api/websocket-trades

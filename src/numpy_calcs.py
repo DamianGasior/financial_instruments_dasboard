@@ -32,7 +32,7 @@ class Numpy_metrics_calcs:
     def mean_calc(cls, array):
         mean = np.round(array.mean(), 4)
         return mean
-    
+
     @classmethod
     def median_calc(cls, array):
         median = np.round(array.median(), 4)
@@ -51,12 +51,12 @@ class Numpy_metrics_calcs:
     @classmethod
     def return_calcs_mean(cls, array):
         daily_returns = Numpy_metrics_calcs.daily_return(array)
-        mean_daily_return = np.round(daily_returns.mean() * 100, 4)
+        mean_daily_return = np.round((np.mean(daily_returns) * 100), 4)
         return mean_daily_return
 
     @classmethod
     def return_calcs_median(cls, array):
-        daily_returns = Numpy_metrics_calcs.daily_return(array)    
+        daily_returns = Numpy_metrics_calcs.daily_return(array)
         median_daily_return = np.round(np.median(daily_returns) * 100, 4)
         return median_daily_return
 
@@ -64,26 +64,18 @@ class Numpy_metrics_calcs:
     def cumulative_return(cls, array):
         cumulat_return = np.round(((array[0] / array[-1]) - 1) * 100, 4)
         return cumulat_return
-    
+
+    @classmethod
+    def st_dev_calc(cls, array):
+        daily_returns = Numpy_metrics_calcs.daily_return(array)
+        st_dev_result = np.std(
+            daily_returns, ddof=1
+        )  # sample of data will be provided,  hence applying 1 instead of 0
+        return st_dev_result
+
     @staticmethod
     def daily_return(array):
         daily_returns = np.diff(array) / array[:-1]
+        print(f"test:{type(daily_returns)}")
+        print(f"test2:{daily_returns.dtype}")
         return daily_returns
-
-
-
-# seems to be not required at the moment
-# @staticmethod
-# def get_the_df(incoming_datafame):
-#     for key, value in incoming_datafame.items():
-#         print(array=value[key].to_numpy())
-
-
-# stworzyc klase numpy
-# skorzystac juz  z tego cojest dodane do dict jako single prices
-# i to sboie wyciagnac,
-
-# stworzyc array po sybmolu i dacie jako index, i lecimy z liczeniem  roznym metryk dla self
-
-# potem jedynie jak ten self zamienic na ndarray
-# lub pracwaoc na self.

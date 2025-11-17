@@ -4,19 +4,27 @@ from collections import deque
 import streamlit as st
 
 
-# st.session_state.my_list = ["AEM", "PHYS"]
+# st.session_state.my_list = ["SPY"]
 
 
 def main():
+
+#     def combined_lists(symbols_from_user, benchmarks):
+#         st.session_state.my_list = symbols_from_user + benchmarks
+#         return st.session_state.my_list
+    
+    
+
     if st.session_state.my_list:
 
         print(st.session_state.my_list)
         queue_of_requests = deque()
+        print("queue_of_requests", queue_of_requests)
 
         symbol_deque = deque(
             st.session_state.my_list
         )  #    symbol_deque=deque(['PHYS', 'AEM','GDX','FNV'])
-
+        print("symbol_deque", symbol_deque)
         if len(symbol_deque) == 0:
             raise ValueError("Missing Underlyin code")
         else:

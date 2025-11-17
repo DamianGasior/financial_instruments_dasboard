@@ -56,8 +56,15 @@ if "show_mean" not in st.session_state:
 
 if "submit_button" not in st.session_state:
     st.session_state.submit_button = False
+
 if "selected_symbols" not in st.session_state:
     st.session_state.selected_symbols = []
+
+if "Select_benchmarks" not in st.session_state:
+    st.session_state.select_benchmarks = []
+
+if "my_benchmarks" not in st.session_state:
+    st.session_state.my_benchmarks = []
 
     # expand / add realtive_coparison
 
@@ -67,7 +74,7 @@ if "my_list" not in st.session_state:
     # show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
 
 
-tab0, tab1, tab2, tab3 = st.tabs(["Enter symbol", "Prices", "Charts", "Metrics"])
+tab0, tab1, tab2, tab3, tab4 = st.tabs(["Enter symbol", "Prices", "Charts", "Metrics","Benchamrk metrics"])
 
 with tab0:
 
@@ -87,6 +94,7 @@ with tab0:
         if st.button("Submit", key="submit_btn"):
             # print("tutaj",st.session_state.my_list)
             st.session_state.submit_button = True
+            
             main()
 
 with tab1:
@@ -156,11 +164,11 @@ with tab1:
                 show_correlation = st.sidebar.checkbox(
                     "Correlation", value=False, key="show_correlation"
                 )
-            if (
-                st.session_state.submit_button
-                and len(st.session_state.selected_symbols) >= 1
-            ):
-                show_mean = st.sidebar.checkbox("Mean", value=False, key="show_mean")
+            # if (
+            #     st.session_state.submit_button
+            #     and len(st.session_state.selected_symbols) >= 1
+            # ):
+            #     show_mean = st.sidebar.checkbox("Mean", value=False, key="show_mean")
 
     # logic below for correlation calc and display
 
@@ -274,9 +282,6 @@ with tab3:
 
         # want to see for which symbols where the arrays built,
         columns = st.session_state.merged_df_one.columns
-        # print(len(columns))
-        # print(columns[0])
-        # print(f"kolumny_to:{columns}")
         merged_df_array = numpy_calcs.Numpy_metrics_calcs.to_numpy(
             st.session_state.merged_df_one
         )
@@ -308,7 +313,7 @@ with tab3:
 
                 price_min = calc_array.min_calc(merged_df_array[:, i])
                 # st.write(f"Min : {price_min}")
-                st.metric(label="Min", value=price_min)
+                st.metric(label="Min", value=f"{price_min}")
 
                 price_max = calc_array.max_calc(merged_df_array[:, i])
                 # st.write(f"Max : {price_max}")
@@ -320,7 +325,7 @@ with tab3:
 
                 mean_daily_return = calc_array.return_calcs_mean(merged_df_array[:, i])
                 # st.write(f"Mean daily return(%): {mean_daily_return}")
-                st.metric(label="Mean daily return", value=f'{mean_daily_return} %')
+                st.metric(label="Mean daily return", value=f"{mean_daily_return:.4f} %")
 
                 median_daily_return = calc_array.return_calcs_median(
                     merged_df_array[:, i]
@@ -331,17 +336,18 @@ with tab3:
                 return_min = calc_array.daily_return(merged_df_array[:, i])
                 return_min = calc_array.min_calc(return_min) * 100
                 # st.write(f"Min : {price_min}")
-                st.metric(label="Min daily return", value=f'{return_min} %')
+                st.metric(label="Min daily return", value=f"{return_min:.4f} %")
 
                 return_max = calc_array.daily_return(merged_df_array[:, i])
-                print('test')
-                print(return_max)
                 return_max = calc_array.max_calc(return_max) * 100
                 # st.write(f"Min : {price_min}")
-                st.metric(label="Max daily return", value=f'{return_max} %')
- 
+                st.metric(label="Max daily return", value=f"{return_max:.4f} %")
 
-
+                return_st_dev = calc_array.st_dev_calc(merged_df_array[:, i])
+                return_st_dev = return_st_dev * 100
+                st.metric(
+                    label="Daily standard deviation", value=f"{return_st_dev:.4f} %"
+                )
 
                 cumulat_return = calc_array.cumulative_return(merged_df_array[:, i])
                 # st.write(f"Cumulative return for given period : {cumulat_return} %")
@@ -369,6 +375,22 @@ with tab3:
             )
             st.markdown("Calculated correlation is:")
             st.dataframe(correlation_builder, width="stretch")
+
+with tab4:
+
+    st.session_state.my_benchmarks = ['SPY']
+    st.write('dziala')
+
+    if st.session_state.submit_button:  # checking if submit button exists
+        # pdb.set_trace()
+        with st.sidebar:
+            st.session_state.select_benchmarks = st.multiselect(
+                "Select benchmarks",
+                st.session_state.my_benchmarks,
+                default=st.session_state.select_benchmarks,
+                key="symbols_multiselect_benchmarks",
+            )
+
 
 
 # if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 1:
