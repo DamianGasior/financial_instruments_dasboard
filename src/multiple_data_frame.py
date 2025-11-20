@@ -82,6 +82,16 @@ class Dataframe_combine_builder:
                 )
         return info
 
+
+#adding a dictionary to a list :
+
+# passed_dict = {'PHYS':              PHYS
+#               2025-11-17  30.73
+#               2025-11-14  31.16
+#               2025-11-13  31.71
+#               2025-11-12  3...
+#               2025-06-27  25.01
+#so  later  it can be extracted so a comboined dataframe with prices can be built
     @staticmethod
     def list_merger(passed_dict, list_of_symbols):
         merged_list = []

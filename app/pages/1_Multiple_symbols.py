@@ -24,8 +24,9 @@ from src import metrics_calcs
 from src import numpy_calcs
 from src import single_data_frame
 from src.utils.main_utils import combined_lists
-
+from src.utils.streamlit_utils import correlation_helper
 import altair as alt
+from src.finhub_python import Finhub_data_builder
 
 
 # from src.alpha_vantage_symbols import Symbol_search
@@ -37,16 +38,15 @@ import altair as alt
 # (os.path.abspath(...) - changing that a full path
 # sys.path.append(...) - adding this  folder to places where python needs to search for modules
 
-# Tabs creation
-
-# new_item = Symbol_search()
-
 
 if "merged_df_one" not in st.session_state:
     st.session_state.merged_df_one = None
 
 if "show_correlation" not in st.session_state:
     st.session_state.show_correlation = False
+
+if "show_stock_profile" not in st.session_state:
+    st.session_state.show_stock_profile = False
 
 if "relative_comparison" not in st.session_state:
     st.session_state.relative_comparison = False
@@ -72,13 +72,22 @@ if "my_benchmarks" not in st.session_state:
 if "my_list" not in st.session_state:
     st.session_state.my_list = []
 
+if "show_correlation_benchmark" not in st.session_state:
+    st.session_state.show_correlation_benchmark = False
+
     # show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
 
 
 st.session_state.my_benchmarks = ["SPY"]
 
 tab0, tab1, tab2, tab3, tab4 = st.tabs(
-    ["Enter symbol", "Prices", "Charts", "Metrics", "Benchamrk metrics"]
+    [
+        "Enter symbol",
+        "Prices",
+        "Charts",
+        "Basic symbol information",
+        "Benchmark metrics",
+    ]
 )
 
 with tab0:
@@ -98,20 +107,11 @@ with tab0:
     st.session_state.my_merged_list = combined_lists(
         st.session_state.my_list, st.session_state.my_benchmarks
     )
-    print("st.session_state.my_merged_list", st.session_state.my_merged_list)
 
-    # if st.session_state.my_list:
-
-    if (
-        st.session_state.my_merged_list
-    ):  # zmienic wystepowanie w calej reszcze w streamlit pliku
+    if st.session_state.my_merged_list:
 
         if st.button("Submit", key="submit_btn"):
-            # print("tutaj",st.session_state.my_list)
             st.session_state.submit_button = True
-
-            # st.session_state.my_merged_list = combined_lists(st.session_state.my_list, st.session_state.my_benchmarks)
-            # print("st.session_state.my_merged_list", st.session_state.my_merged_list)
 
             main()
 
@@ -126,7 +126,6 @@ with tab1:
         #     'Select your symbols',st.session_state.my_list)
 
     if st.session_state.submit_button:  # checking if submit button exists
-        # pdb.set_trace()
         with st.sidebar:
             st.session_state.selected_symbols = st.multiselect(
                 "Select symbols",
@@ -134,9 +133,6 @@ with tab1:
                 default=st.session_state.selected_symbols,
                 key="symbols_multiselect",
             )
-
-        # print("st.session_state.selected_symbols", st.session_state.selected_symbols)
-        # print("st.multiselect", st.multiselect)
 
     if len(st.session_state.selected_symbols) >= 1:
         # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
@@ -174,14 +170,35 @@ with tab1:
                 relative_comparison = st.sidebar.checkbox(
                     "Relative comparison", value=False, key="relative_comparison"
                 )
-            st.title(":small[Metrics]")
-            if (
-                st.session_state.submit_button
-                and len(st.session_state.selected_symbols) >= 2
-            ):
-                show_correlation = st.sidebar.checkbox(
-                    "Correlation", value=False, key="show_correlation"
-                )
+            st.title(":small[Basic symbol information]")
+            if st.session_state.submit_button:
+                if len(st.session_state.selected_symbols) >= 1:
+                    show_stock_profile = st.sidebar.checkbox(
+                        "Companies profile", value=False, key="show_stock_profile"
+                    )
+                    if len(st.session_state.selected_symbols) >= 2:
+                        # show_stock_profile = st.sidebar.checkbox(
+                        #     "Companies profile", value=False, key="show_stock_profile"
+                        # )
+                        show_correlation = st.sidebar.checkbox(
+                            "Correlation", value=False, key="show_correlation"
+                        )
+
+            # (
+            #     st.session_state.submit_button
+            #     and len(st.session_state.selected_symbols) >= 1
+            # ):
+            #     show_stock_profile = st.sidebar.checkbox(
+            #         "Companies profile", value=False, key="show_stock_profile"
+            #     )
+            # elif (
+            #     st.session_state.submit_button
+            #     and len(st.session_state.selected_symbols) >= 2
+            # ):
+            #     show_correlation = st.sidebar.checkbox(
+            #         "Correlation", value=False, key="show_correlation"
+            #     )
+
             # if (
             #     st.session_state.submit_button
             #     and len(st.session_state.selected_symbols) >= 1
@@ -374,33 +391,30 @@ with tab3:
                     value=f"{cumulat_return} %",
                 )
 
-        # for indeks, column in enumerate(cols):
-        #     #columns has a metric function which we can use in similar way like st.metric
-        #     column.metric(
-        #         label="Mean is ",
-        #         value=calc_mean
-        #         )
+                if st.session_state.show_stock_profile is True:
+                    # companys_profile
+                   
+                    finhub_dict_of_dict=Finhub_data_builder.get_the_right_dict(
+                        "single_info"
+                    )
+                    print("test1")
+                    print(type(finhub_dict_of_dict))
+                    finhub_dict_of_dic
+                    st.markdown("Dziala checkbox")
+                    # for symbol in st.session_state.selected_symbols :
 
     if st.session_state.show_correlation is True:
-        # my_symbols
-        symbol_df_builder = pipeline.Dataframe_combine_builder()
-        df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
+        # df_list = symbol_df_builder.list_merger(stock_dict, my_symbols) # seem to be not required
         # merge those by columns
         if df_list:
-            merged_df_sec = pd.concat(df_list, axis=1)
-            correlation_builder = metrics_calcs.Underlying_metrics.calc_correlation(
-                merged_df_sec
-            )
+            correlation_builder = correlation_helper(df_list)
             st.markdown("Calculated correlation is:")
             st.dataframe(correlation_builder, width="stretch")
 
+
 with tab4:
 
-    # st.session_state.my_benchmarks = ['SPY']
-    st.write("dziala")
-
     if st.session_state.submit_button:  # checking if submit button exists
-        # pdb.set_trace()
         with st.sidebar:
             st.session_state.select_benchmarks = st.multiselect(
                 "Select benchmarks",
@@ -415,13 +429,46 @@ with tab4:
         and len(st.session_state.select_benchmarks) >= 1
     ):
         with st.sidebar:
-            st.title(":small[Benchamrk metrics]")
+            st.title(":small[Benchmark metrics]")
             if (
                 st.session_state.submit_button
                 and len(st.session_state.selected_symbols) >= 2
             ):
                 show_correlation_benchmark = st.sidebar.checkbox(
                     "Correlation", value=False, key="show_correlation_benchmark"
+                )
+
+    if st.session_state.show_correlation_benchmark is True:
+        my_symbols_merged = combined_lists(
+            st.session_state.select_benchmarks, st.session_state.selected_symbols
+        )
+        df_list_with_benchmark = symbol_df_builder.list_merger(
+            stock_dict, my_symbols_merged
+        )
+        if df_list_with_benchmark:
+            correlation_builder = correlation_helper(df_list_with_benchmark)
+            st.markdown("Calculated correlation is:")
+            st.dataframe(correlation_builder, width="stretch")
+            with st.expander(" Pearson Correlation (r) definition, click to expand"):
+                st.write(
+                    """
+                        What does it measure?
+                        How strongly and linearly two instruments move together.
+                        Range: from –1 to +1.
+
+                        +1 → they move in the same direction, perfectly
+
+                        0 → no linear relationship
+
+                        –1 → they move in opposite directions
+
+                        Most important: Correlation tells you only about the direction and consistency of movement, but not how many units something increases or decreases.
+
+                        Example:
+                        If the S&P 500 goes up by 1% → Apple often also goes up by around 1%
+                        → high correlation (e.g., 0.9)
+                        But we still don’t know whether Apple increases more or less.
+                """
                 )
 
 

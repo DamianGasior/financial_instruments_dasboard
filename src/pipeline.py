@@ -3,10 +3,10 @@ from src.single_data_frame import Underlying_data_frame
 from src.metrics_calcs import Underlying_metrics
 from src.multiple_data_frame import Dataframe_combine_builder
 import pandas as pd
-import pdb
+from src.finhub_python import Finhub_data_builder
 
 
-multiple_data_frame = Dataframe_combine_builder()  # tu jakostotreba rozwiazac
+multiple_data_frame = Dataframe_combine_builder()
 result_worst_and_best = Dataframe_combine_builder()
 corr_data_frame = Dataframe_combine_builder()
 multiple_dicts = Dataframe_combine_builder()
@@ -67,6 +67,14 @@ class UnderlyingBuilder:
         worst_and_best = data_frame_builder_with_calcs.worst_and_best()
         print(worst_and_best)
         print(type(worst_and_best))
+
+        request_company_info = Finhub_data_builder.get_company_info(self.stock_symbol)
+        single_company_info = Finhub_data_builder.add_stock_info(
+            self.stock_symbol, request_company_info
+        )
+        dict_of_company_info = Finhub_data_builder.add_dict_to_dict(
+            single_company_info, "single_info"
+        )
 
     #         result_worst_and_best.add_to_list(worst_and_best)
 

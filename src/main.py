@@ -4,7 +4,7 @@ from collections import deque
 import streamlit as st
 
 
-# st.session_state.my_list = ["SPY"]
+# st.session_state.my_merged_list = ["PHYS","AEM"]
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     # if st.session_state.my_list:
     if st.session_state.my_merged_list:
 
-        print(st.session_state.my_list)
+        # print(st.session_state.my_list)
         queue_of_requests = deque()
         print("queue_of_requests", queue_of_requests)
 
