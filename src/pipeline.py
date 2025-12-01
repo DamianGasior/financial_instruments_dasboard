@@ -10,7 +10,8 @@ multiple_data_frame = Dataframe_combine_builder()
 result_worst_and_best = Dataframe_combine_builder()
 corr_data_frame = Dataframe_combine_builder()
 multiple_dicts = Dataframe_combine_builder()
-# single_data_frames=
+single_company_info = Finhub_data_builder()
+dict_of_dift_finhub = Finhub_data_builder()
 
 
 class UnderlyingBuilder:
@@ -22,11 +23,24 @@ class UnderlyingBuilder:
         self.underlying_reuqestor = underlying_reuqestor
         self.stock_symbol = underlying_reuqestor.symbol
 
-        if self.underlying_reuqestor.function == "TIME_SERIES_DAILY":
+        if self.underlying_reuqestor.function == "TIME_SERIES_DAILY" or self.underlying_reuqestor.function == "TIME_SERIES_DAILY_ADJUSTED" :
             self.key_paremeter = "Time Series (Daily)"
-            #  will be expanded with other key.parametrs like for week and monthly
+            self.df_builder_result = df_builder_result
+        elif self.underlying_reuqestor.function == "TIME_SERIES_WEEKLY":
+            self.key_paremeter = "Weekly Time Series"
+            self.df_builder_result = df_builder_result
+        elif self.underlying_reuqestor.function == "TIME_SERIES_MONTHLY":
+            self.key_paremeter = "Monthly Time Series"
+            self.df_builder_result = df_builder_result
+        elif self.underlying_reuqestor.function == "TIME_SERIES_WEEKLY_ADJUSTED":
+            self.key_paremeter = "Weekly Adjusted Time Series"
+            self.df_builder_result = df_builder_result
+        elif self.underlying_reuqestor.function == "TIME_SERIES_MONTHLY_ADJUSTED":
+            self.key_paremeter = "Monthly Adjusted Time Series"
             self.df_builder_result = df_builder_result
 
+
+     
     def run_pipeline(self, underlying_reuqestor):
         stock = self.underlying_reuqestor.request_to_ext_api()
         data_frame_builder = Underlying_data_frame(
@@ -69,12 +83,19 @@ class UnderlyingBuilder:
         print(type(worst_and_best))
 
         request_company_info = Finhub_data_builder.get_company_info(self.stock_symbol)
-        single_company_info = Finhub_data_builder.add_stock_info(
-            self.stock_symbol, request_company_info
-        )
-        dict_of_company_info = Finhub_data_builder.add_dict_to_dict(
-            single_company_info, "single_info"
-        )
+
+        single_company_info.add_stock_info(self.stock_symbol, request_company_info)
+        # print(type(single_company_info))
+
+        dict_of_dift_finhub.add_dict_to_dict(single_company_info, "single_company_info")
+        # print(type(dict_of_dift_finhub))
+
+        # single_company_info = Finhub_data_builder.add_stock_info(
+        #     self.stock_symbol, request_company_info
+        # )
+        # dict_of_company_info = Finhub_data_builder.add_dict_to_dict(
+        #     single_company_info, "single_info"
+        # )
 
     #         result_worst_and_best.add_to_list(worst_and_best)
 

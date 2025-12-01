@@ -2,14 +2,14 @@ from src.api_request_alphavantage import Underlying_request_details
 from src.pipeline import UnderlyingBuilder
 from collections import deque
 import streamlit as st
+from src import finhub_websocket
 
 
-# st.session_state.my_merged_list = ["PHYS","AEM"]
+# st.session_state.my_merged_list = ["PHYS", "AEM"]
 
 
 def main():
 
-    # if st.session_state.my_list:
     if st.session_state.my_merged_list:
 
         # print(st.session_state.my_list)
@@ -26,7 +26,7 @@ def main():
             while symbol_deque:  # trigger it till is not empty
                 underlying_reuqestor = Underlying_request_details(
                     symbol=symbol_deque.popleft(),
-                    function="TIME_SERIES_DAILY",
+                    function=st.session_state.price_type,
                     outputsize="compact",
                     datatype="json",
                 )

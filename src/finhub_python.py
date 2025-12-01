@@ -1,7 +1,12 @@
 import finnhub
 import pandas as pd
+import streamlit as st
+import time
+from datetime import datetime
+
 
 # https://github.com/Finnhub-Stock-API/finnhub-python
+
 
 API_KEY = "d4ee4ppr01qrumpf24fgd4ee4ppr01qrumpf24g0"
 
@@ -11,44 +16,50 @@ finnhub_client = finnhub.Client(api_key=API_KEY)
 
 
 class Finhub_data_builder:
-    stock_companies_profile = {}
-    dict_of_dict_finhub = {}
+    def __init__(self):
+        self.stock_companies_profile = {}
+        self.dict_of_dict_finhub = {}
 
     @classmethod
+    @st.cache_data
     def get_company_info(cls, symbol):
         company_info = finnhub_client.company_profile2(symbol=symbol)  # symbol="AEM"
-        # print(company_info)
+        print("company_info", company_info)
+        print('function fired,"time":,', datetime.now().isoformat())
+        if company_info == {}:
+            company_info = {symbol: "No data available"}
+
         return company_info
 
         # method which will allow to add per symbol each received information to a dictionary
 
-    @classmethod
-    def add_stock_info(cls, symbol, passed_comp_info):
-        cls.stock_companies_profile[symbol] = passed_comp_info
-        return cls.stock_companies_profile
+    def add_stock_info(self, symbol, passed_comp_info):
+        self.stock_companies_profile[symbol] = passed_comp_info
+        return self.stock_companies_profile
 
-    @classmethod
     def add_dict_to_dict(
-        cls, single_dict, name
-    ):  # name to be like "single_company_info_"
-        cls.dict_of_dict_finhub[name] = single_dict
-        return cls.dict_of_dict_finhub
+        self, single_dict, name
+    ):  # name to be like "single_company_info"
+        self.dict_of_dict_finhub[name] = single_dict
+        return self.dict_of_dict_finhub
 
-    @classmethod
-    def get_the_right_first_level_dict(cls, symbol):
-        value = cls.stock_companies_profile[symbol]
+    def get_the_right_first_level_dict(self, symbol):
+        value = self.stock_companies_profile[symbol]
         print(value)
         return value
 
-    @classmethod
-    def get_the_right_dict(cls, name):
-        specifc_dict_finhub = cls.dict_of_dict_finhub[name]
+    def get_the_right_dict(self, name):
+        specifc_dict_finhub = self.dict_of_dict_finhub[name]
         print(specifc_dict_finhub)
         return specifc_dict_finhub
+
+    # zasatanoiwic sie czy nie zroibic z list jednal self obiektow, by potem moc na nich latwioej pracowac
+    # jak w przyszlosci ktos bedzie dodawal nowe listy do nich
 
     @staticmethod
     def read_dict(passed_dict):
         for key, value in passed_dict.items():
+            print("jestem tu")
             print(f"{key} : {value}")
 
 
