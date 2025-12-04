@@ -1,10 +1,10 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-from src import pipeline
-from src import metrics_calcs
+from src.pipeline import pipeline
+from src.metrics import metrics_calcs
 from src.utils import data_finhub_websocket
-from src import finhub_websocket
+from src.api_providers.finhub import finhub_websocket
 
 
 def correlation_helper(df_list):

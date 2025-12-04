@@ -7,7 +7,6 @@ import altair as alt
 from streamlit_autorefresh import st_autorefresh
 import plotly.graph_objects as go
 import numpy as np
-
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 import pandas as pd
 
@@ -16,17 +15,18 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
 
-from src.api_request_alphavantage import Underlying_request_details
 from src.main import main
-from src import pipeline
-from src import multiple_data_frame
-from src import metrics_calcs
-from src import numpy_calcs
-from src import single_data_frame
+from src.pipeline import pipeline
+from src.api_providers.common import multiple_data_frame
+from src.metrics import metrics_calcs
+from src.metrics import numpy_calcs
+from src.api_providers.alpha_vantage import single_data_frame
 from src.utils.main_utils import combined_lists
 from src.utils.streamlit_utils import correlation_helper
 import altair as alt
-from src.finhub_python import Finhub_data_builder
+from src.api_providers.finhub.finhub_python import Finhub_data_builder
+# from src.api_providers.alpha_vantage.api_request_alphavantage import Underlying_request_details
+# from src.api_providers.alpha_vantage.single_data_frame import Underlying_data_frame
 
 
 # from src.alpha_vantage_symbols import Symbol_search
@@ -84,13 +84,20 @@ if "price_type" not in st.session_state:
 if "price_adjustment" not in st.session_state:
     st.session_state.price_adjustment = "non-adjusted"
 
+
+if "selected_broker" not in st.session_state:
+    st.session_state.selected_broker = None
+
+
+
     # show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
 
 
 st.session_state.my_benchmarks = ["SPY"]
 
-tab0, tab1, tab2, tab3, tab4 = st.tabs(
+tab00, tab0, tab1, tab2, tab3, tab4 = st.tabs(
     [
+        "Dealer selection",
         "Enter symbol",
         "Prices",
         "Charts",
@@ -98,6 +105,13 @@ tab0, tab1, tab2, tab3, tab4 = st.tabs(
         "Benchmark metrics",
     ]
 )
+with tab00:
+    st.markdown("Choose one of the data providers")
+    broker_selection = st.radio(
+        "Select broker", ["Alpha vantage", "Twelve data"], index=0
+    )
+    st.session_state.selected_broker = broker_selection   
+    st.markdown("Once you selected the data  provider, go to the next tab : 'Enter symbol'")
 
 with tab0:
 
@@ -150,6 +164,17 @@ with tab0:
 
             main()
 
+    # if st.button("Submit", key="submit_btn"):
+    #     st.session_state.submit_button = True
+    #     if pipeline.Underlying_data_frame():
+    #         test_response = Underlying_request_details.request_to_ext_api()
+    #         if test_response == 'Response is from cache.Seems there was already a similar request triggered today' :
+    #             st.write('udalo sie2')
+    #         elif test_response == 'Response was succesfull (200)' :
+    #             st.write('udalo sie1')
+    # pipeline.UnderlyingBuilder.run_pipeline.data
+    # st.write(pipeline.Underlying_data_frame())
+
 with tab1:
     with st.sidebar:
         st.title("Symbols")
@@ -197,14 +222,15 @@ with tab1:
 
     if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 1:
         with st.sidebar:
-            st.title(":small[Charts]")
-            if (
-                st.session_state.submit_button
-                and len(st.session_state.selected_symbols) >= 2
-            ):
-                relative_comparison = st.sidebar.checkbox(
-                    "Relative comparison", value=False, key="relative_comparison"
-                )
+            # Leave for later to add some additional options for charts, for now, single charts are fine
+            # st.title(":small[Charts]")
+            # if (
+            #     st.session_state.submit_button
+            #     and len(st.session_state.selected_symbols) >= 2
+            # ):
+            #     relative_comparison = st.sidebar.checkbox(
+            #         "Relative comparison", value=False, key="relative_comparison"
+            #     )
             st.title(":small[Basic symbol information]")
             if st.session_state.submit_button:
                 if len(st.session_state.selected_symbols) >= 1:
@@ -395,29 +421,38 @@ with tab3:
                     )
                     # st.write(f"Mean daily return(%): {mean_daily_return}")
                     st.metric(
-                        label="Mean daily return", value=f"{mean_daily_return:.4f} %"
+                        label=f"Mean {price_type} return",
+                        value=f"{mean_daily_return:.4f} %",
                     )
 
                     median_daily_return = calc_array.return_calcs_median(
                         merged_df_array[:, i]
                     )
                     # st.write(f"Mean daily return(%): {mean_daily_return}")
-                    st.metric(label="Median daily return(%)", value=median_daily_return)
+                    st.metric(
+                        label=f"Median {price_type} return(%)",
+                        value=median_daily_return,
+                    )
 
                     return_min = calc_array.daily_return(merged_df_array[:, i])
                     return_min = calc_array.min_calc(return_min) * 100
                     # st.write(f"Min : {price_min}")
-                    st.metric(label="Min daily return", value=f"{return_min:.4f} %")
+                    st.metric(
+                        label=f"Min {price_type} return", value=f"{return_min:.4f} %"
+                    )
 
                     return_max = calc_array.daily_return(merged_df_array[:, i])
                     return_max = calc_array.max_calc(return_max) * 100
                     # st.write(f"Min : {price_min}")
-                    st.metric(label="Max daily return", value=f"{return_max:.4f} %")
+                    st.metric(
+                        label=f"Max {price_type} return", value=f"{return_max:.4f} %"
+                    )
 
                     return_st_dev = calc_array.st_dev_calc(merged_df_array[:, i])
                     return_st_dev = return_st_dev * 100
                     st.metric(
-                        label="Daily standard deviation", value=f"{return_st_dev:.4f} %"
+                        label=f"{price_type.capitalize()} standard deviation",
+                        value=f"{return_st_dev:.4f} %",
                     )
 
                     cumulat_return = calc_array.cumulative_return(merged_df_array[:, i])

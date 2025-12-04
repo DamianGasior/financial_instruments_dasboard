@@ -2,12 +2,14 @@ import pdb
 import streamlit as st
 import sys  # allows to access to  information used by interpreter , in this case will be used to  point out to the src folder
 import os  # allows to interact with the operating system , like checking the paths , catalogs and so on
-from src import finhub_websocket
+from src.api_providers.finhub import finhub_websocket
 import threading
 from src.utils import data_finhub_websocket, streamlit_utils
 
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 import pandas as pd
+import websocket
+from src.api_providers.finhub.finhub_websocket import ws_connection
 
 from streamlit_autorefresh import st_autorefresh
 
@@ -129,9 +131,10 @@ if result:
 #     st.write(q_last_quote)
 #     st.metric(label=q_last_quote[0], value=q_last_quote[1])
 
-# if st.button("Check unique"):
-#     q_unique = finhub_websocket.unique_values()
-#     st.write(q_unique)
+
+if st.button("Close websocket"):
+    finhub_websocket.ws_connection.close()
+    st.success("Websocket closing...")
 
 
 st.title("Real-time prices")
@@ -148,8 +151,6 @@ q_last_quote = finhub_websocket.get_specific_symbol()
 # st.metric(label="BINANCE:BTCUSDT", value=value1)
 
 
-
-
 # st.title("Commodities :small[ [Exchange : Symbol] ]")
 # # st.subheader("Commodities :small[ [Exchange : Symbol] ]")
 # # st.write("Commodities :small[ [Exchange : Symbol] ]")
@@ -161,14 +162,32 @@ q_last_quote = finhub_websocket.get_specific_symbol()
 #             st.metric(
 #                 label=s,
 #                 value=st.session_state.symbol_quotes_cmdty.get(s, "missing quotes"),
-            # )
+# )
 
-streamlit_utils.view_market_data("Indices", st.session_state.symbols_oanda_indices,st.session_state.symbol_quotes_indices)
+streamlit_utils.view_market_data(
+    "Indices",
+    st.session_state.symbols_oanda_indices,
+    st.session_state.symbol_quotes_indices,
+)
 
-streamlit_utils.view_market_data("Commodities", st.session_state.symbols_oanda_cmdty,st.session_state.symbol_quotes_cmdty)
+streamlit_utils.view_market_data(
+    "Commodities",
+    st.session_state.symbols_oanda_cmdty,
+    st.session_state.symbol_quotes_cmdty,
+)
 
-streamlit_utils.view_market_data("Fx pairs", st.session_state.symbols_oanda_ccy_pairs, st.session_state.symbol_quotes_fx_pairs )
+streamlit_utils.view_market_data(
+    "Fx pairs",
+    st.session_state.symbols_oanda_ccy_pairs,
+    st.session_state.symbol_quotes_fx_pairs,
+)
 
-streamlit_utils.view_market_data("Bond yields", st.session_state.symbols_oanda_bond_yields, st.session_state.symbol_quotes_bond_yields)
+streamlit_utils.view_market_data(
+    "Bond yields",
+    st.session_state.symbols_oanda_bond_yields,
+    st.session_state.symbol_quotes_bond_yields,
+)
 
-streamlit_utils.view_market_data("Cryptos", st.session_state.symbols_req_cryptos, st.session_state.symbol_quotes)
+streamlit_utils.view_market_data(
+    "Cryptos", st.session_state.symbols_req_cryptos, st.session_state.symbol_quotes
+)

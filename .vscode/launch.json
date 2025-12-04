@@ -24,6 +24,18 @@
             "env": {
                 "PYTHONPATH": "${workspaceFolder}" // pozwala widzieć moduł src/
             }
+        },
+        {
+            "name": "Run TwelveData Request",
+            "type": "python",
+            "request": "launch",
+            "module": "src.api_providers.twelve_data.api_request_twelve_data",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
         }
     ]
 }
