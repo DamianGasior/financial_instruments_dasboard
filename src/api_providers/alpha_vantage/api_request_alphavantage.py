@@ -6,12 +6,15 @@ from pathlib import Path
 import requests_cache
 import logging
 import streamlit as st
+from collections import deque
 
 # requests_cache.clear()
 import sqlite3
 import pickle
 import os
 from dotenv import load_dotenv  # module which allows to read .env file
+from src.pipeline.base_api_request import BaseAPIProvider
+from src.api_providers.alpha_vantage.single_data_frame import Underlying_data_frame
 
 # Frist file for getting the data
 
@@ -21,7 +24,7 @@ logging.basicConfig(
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
-#what does parents mean ? 
+# what does parents mean ?
 # Levels up
 # parents[0] → alpha_vantage
 # parents[1] → api_providers
@@ -43,11 +46,16 @@ RAW_DATA.mkdir(parents=True, exist_ok=True)
 PROCESSED_DATA.mkdir(parents=True, exist_ok=True)
 
 
-class Underlying_request_details:
+alpha_queue_of_requests = deque()
+
+
+class Underlying_request_details(BaseAPIProvider):
     cache_path = RAW_DATA / "alpha_cache"
     cache_path.parent.mkdir(parents=True, exist_ok=True)
 
-    def __init__(self, symbol, function, outputsize, datatype, apikey=API_KEY):
+    def __init__(
+        self, symbol, function, outputsize="compact", datatype="json", apikey=API_KEY
+    ):
         self.apikey = apikey
         self.symbol = symbol
         self.function = function
@@ -71,7 +79,7 @@ class Underlying_request_details:
     def to_dict_params(self):
         return self.__dict__
 
-    def request_to_ext_api(self):
+    def api_request(self):
         self.cache_manager()
         params = self.to_dict_params()
         url = "https://www.alphavantage.co/query"
@@ -106,7 +114,7 @@ class Underlying_request_details:
             )
             time.sleep(60)
             return (
-                self.request_to_ext_api()
+                self.api_request()
             )  # expose this in the streamlit UI in the main page
         elif resp.status_code == 200 and (getattr(resp, "from_cache", False)) is False:
             logging.info("response was succesfull (200)")
@@ -124,9 +132,12 @@ class Underlying_request_details:
         # print(json.dumps(response,indent=4)) # to see what is the json format response
         return response
 
+    # def attach_to_queue(response):
+    #     alpha_queue_of_requests.append(response)
+
     def read_all_keys_values_from_api(self):
-        # reads all the keys and values from request_to_ext_api() , from api or caches
-        resp = self.request_to_ext_api()
+        # reads all the keys and values from api_request() , from api or caches
+        resp = self.api_request()
         # resp=resp.json()
         for key, value in resp.items():
             print(f'KEY IS : {key}, ":", VALUE IS : {value} \n')
@@ -161,3 +172,11 @@ class Underlying_request_details:
         # Dane JSON odpowiedzi
 
         conn.close()
+
+    def execute_full_request(self):
+        response = self.api_request()
+        alpha_queue_of_requests.append(response)
+        return response
+
+    def create_transformer(self,api_request):
+        return Underlying_data_frame(api_request)

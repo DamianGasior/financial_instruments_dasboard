@@ -19,9 +19,10 @@ class Finhub_data_builder:
     def __init__(self):
         self.stock_companies_profile = {}
         self.dict_of_dict_finhub = {}
+        # self.symbol = symbol
 
     @classmethod
-    @st.cache_data
+    # @st.cache_data
     def get_company_info(cls, symbol):
         company_info = finnhub_client.company_profile2(symbol=symbol)  # symbol="AEM"
         print("company_info", company_info)
@@ -33,15 +34,15 @@ class Finhub_data_builder:
 
         # method which will allow to add per symbol each received information to a dictionary
 
-    def add_stock_info(self, symbol, passed_comp_info):
-        self.stock_companies_profile[symbol] = passed_comp_info
-        return self.stock_companies_profile
+    # def add_stock_info(self, symbol, passed_comp_info):
+    #     self.stock_companies_profile[symbol] = passed_comp_info
+    #     return self.stock_companies_profile
 
-    def add_dict_to_dict(
-        self, single_dict, name
-    ):  # name to be like "single_company_info"
-        self.dict_of_dict_finhub[name] = single_dict
-        return self.dict_of_dict_finhub
+    # def add_dict_to_dict(
+    #     self, single_dict, name
+    # ):  # name to be like "single_company_info"
+    #     self.dict_of_dict_finhub[name] = single_dict
+    #     return self.dict_of_dict_finhub
 
     def get_the_right_first_level_dict(self, symbol):
         value = self.stock_companies_profile[symbol]
@@ -52,6 +53,19 @@ class Finhub_data_builder:
         specifc_dict_finhub = self.dict_of_dict_finhub[name]
         print(specifc_dict_finhub)
         return specifc_dict_finhub
+
+    def execute_finhub(self, symbol):
+        stock_info = self.get_company_info(symbol)
+        print(stock_info)
+        if "single_company_info" not in self.dict_of_dict_finhub:
+            self.dict_of_dict_finhub["single_company_info"] = {}
+        self.dict_of_dict_finhub["single_company_info"][symbol] = stock_info
+        print(
+            'zawartosc - "single_company_info" ',
+            self.dict_of_dict_finhub["single_company_info"].keys(),
+            'zawartosc values  - "single_company_info" ',
+            self.dict_of_dict_finhub["single_company_info"].values(),
+        )
 
     # zasatanoiwic sie czy nie zroibic z list jednal self obiektow, by potem moc na nich latwioej pracowac
     # jak w przyszlosci ktos bedzie dodawal nowe listy do nich

@@ -3,27 +3,41 @@ from datetime import date
 from pathlib import Path
 from dotenv import load_dotenv  # module which allows to read .env file
 
-from src.api_providers.alpha_vantage.api_request_alphavantage import Underlying_request_details
+from src.api_providers.alpha_vantage.api_request_alphavantage import (
+    Underlying_request_details,
+)
 from src.api_providers.alpha_vantage.single_data_frame import Underlying_data_frame
+
 
 class Underlying_metrics:
 
     def __init__(
         self,
-        underlying_request: Underlying_request_details | None = None,
-        underlying_df: Underlying_data_frame | None = None,
-        example_df: Underlying_data_frame | None = None,
+        underlying_request=None,
+        underlying_df=None,
+        symbol=None,
     ):
         # self.underlying_request=underlying_request
-        self.symbol = underlying_request.symbol
-        self.return_for_symbol = self.symbol + "_prct_return"
-        self.close = self.symbol
-        self.underlying_df = underlying_df.to_dataframe()
+        # self.symbol = underlying_request.symbol
+        self.symbol = symbol
+        print(type(underlying_df))
 
-    def __getattr__(
-        self, name
-    ):  # dunder method, it allows to treat the class instance as dataframe
-        return getattr(self.underlying_df, name)
+        self.close_price_type = "close"
+        # self.underlying_df = underlying_df.to_dataframe()
+        self.underlying_df = underlying_df
+        self.single_stock_data = {}
+        self.dict_of_dict = {}
+
+    @property
+    def return_for_symbol(self):
+        if self.symbol is None:
+            return None
+        return f"{self.symbol}_prct_return"
+
+    # def __getattr__(
+    #     self, name
+    # ):  # dunder method, it allows to treat the class instance as dataframe
+    #     return getattr(self.underlying_df, name)
 
     def copy_df(self):
         self.test = self.underlying_df.loc[
@@ -42,11 +56,11 @@ class Underlying_metrics:
 
     def price_chng_perct(self):
         # return_for_symbol='daily_return_'+self.symbol
-        # print( self.return_for_symbol)
+        
         self.underlying_df[self.return_for_symbol] = (
-            self.underlying_df[self.close].pct_change() * 100
+            self.underlying_df[self.symbol].pct_change() * 100
         ).round(4)
-
+        print(self.underlying_df)
         return self.underlying_df
 
     def worst_and_best(self):
@@ -101,8 +115,73 @@ class Underlying_metrics:
         )
         return result_st_dev
 
- 
+    # this can be moved to some utils together with the same methods from mulitple_Data_frame file
+    # def add_to_dict(self, single_data_frame, stock_symbol):
+    #     # creating a copy so that in case are other operations done on single_data_frame, other columns added in this case I will see only prices
+    #     single_data_frame = single_data_frame.copy()
+    #     print(type(single_data_frame))
+
+    #     if isinstance(single_data_frame, pd.DataFrame):
+    #         self.single_stock_data[stock_symbol] = single_data_frame
+    #         print("len of add_to_dict1:", len(self.single_stock_data))
+    #         print(type(self.single_stock_data))
+    #         return self.single_stock_data
+
+    #     else:
+    #         self.single_data_frame = single_data_frame.to_dataframe()
+    #         self.single_stock_data[stock_symbol] = self.single_data_frame
+    #         print("len of add_to_dict2:", len(self.single_stock_data))
+    #         print(type(self.single_stock_data))
+
+    #         return self.single_stock_data
+
+    # this can be moved to some utils together with the same methods from mulitple_Data_frame file
+    def add_dict_to_dict(self, name, symbol, value):
+        if name not in self.dict_of_dict:
+            self.dict_of_dict[name] = {}
+        self.dict_of_dict[name][symbol] = value
+        return self.dict_of_dict
+
+    # this can be moved to some utils together with the same methods from mulitple_Data_frame file
+    # tbc if it will work for self.single_stock_data={} and for  self.dict_of_dict={}
+    def get_the_right_df(self, stock):
+        value = self.single_stock_data[stock]
+        print(value)
+        return value
+
+    # this can be moved to some utils together with the same methods from mulitple_Data_frame file
+    def get_the_right_dict(self, name):
+        print("Klucze dostępne:", self.dict_of_dict.keys())
+        print("values dostępne:", self.dict_of_dict.values())
+        print("Szukany klucz name:", name)
+        specifc_dict = self.dict_of_dict[name]
+        print(specifc_dict)
+        print(type(specifc_dict))
+        df = pd.DataFrame(specifc_dict)
+        return df
+
+    def execute_metrics(self):
+        print(self.symbol)
+        if self.symbol is None:
+            pass
+        elif self.symbol is not None:
+            price_returns = self.price_chng_perct()
+        print(type(price_returns), self.symbol)
+        if "single_timeframe_returns" not in self.dict_of_dict:
+            self.dict_of_dict["single_timeframe_returns"] = {}
+
+        self.dict_of_dict["single_timeframe_returns"][self.symbol] = price_returns
+        print(
+            'zawartosc - single_timeframe_returns" ',
+            self.dict_of_dict["single_timeframe_returns"].keys(),
+        )
+
+    # zrboic analize tego : https://chatgpt.com/c/693dccf9-7630-832c-94f1-182b52fd5ffa
+
     @staticmethod
     def calc_correlation(concac_df):
         corr_result = concac_df.corr()
         return corr_result
+
+
+# df_with_calcs=Underlying_metrics()

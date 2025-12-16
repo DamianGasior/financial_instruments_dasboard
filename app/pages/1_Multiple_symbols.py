@@ -7,16 +7,17 @@ import altair as alt
 from streamlit_autorefresh import st_autorefresh
 import plotly.graph_objects as go
 import numpy as np
+from src.api_providers.common.multiple_data_frame import Dataframe_combine_builder
+
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 import pandas as pd
 
-# Dodaj folder główny projektu do sys.path
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if PROJECT_ROOT not in sys.path:
-    sys.path.append(PROJECT_ROOT)
 
 from src.main import main
+
 from src.pipeline import pipeline
+
+# from src.pipeline.pipeline import DataPipeline
 from src.api_providers.common import multiple_data_frame
 from src.metrics import metrics_calcs
 from src.metrics import numpy_calcs
@@ -25,6 +26,13 @@ from src.utils.main_utils import combined_lists
 from src.utils.streamlit_utils import correlation_helper
 import altair as alt
 from src.api_providers.finhub.finhub_python import Finhub_data_builder
+from src.metrics.metrics_calcs import Underlying_metrics
+
+# Dodaj folder główny projektu do sys.path
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if PROJECT_ROOT not in sys.path:
+    sys.path.append(PROJECT_ROOT)
+
 # from src.api_providers.alpha_vantage.api_request_alphavantage import Underlying_request_details
 # from src.api_providers.alpha_vantage.single_data_frame import Underlying_data_frame
 
@@ -88,9 +96,13 @@ if "price_adjustment" not in st.session_state:
 if "selected_broker" not in st.session_state:
     st.session_state.selected_broker = None
 
+# if "multi_builder" not in st.session_state:
+#     st.session_state.multi_builder = Dataframe_combine_builder()
 
+# if "metrics_instance" not in st.session_state:
+#     st.session_state.metrics_instance = None
 
-    # show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
+# show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
 
 
 st.session_state.my_benchmarks = ["SPY"]
@@ -108,10 +120,12 @@ tab00, tab0, tab1, tab2, tab3, tab4 = st.tabs(
 with tab00:
     st.markdown("Choose one of the data providers")
     broker_selection = st.radio(
-        "Select broker", ["Alpha vantage", "Twelve data"], index=0
+        "Select broker", ["Alpha vantage", "Alpha vantage_test", "Twelve data"], index=2
     )
-    st.session_state.selected_broker = broker_selection   
-    st.markdown("Once you selected the data  provider, go to the next tab : 'Enter symbol'")
+    st.session_state.selected_broker = broker_selection
+    st.markdown(
+        "Once you selected the data  provider, go to the next tab : 'Enter symbol'"
+    )
 
 with tab0:
 
@@ -193,83 +207,138 @@ with tab1:
                 default=st.session_state.selected_symbols,
                 key="symbols_multiselect",
             )
+    # if st.session_state.selected_broker == "Alpha vantage":
+    #     if len(st.session_state.selected_symbols) >= 1:
+    #         # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
+    #         single_stock_prices = st.session_state.multi_builder.get_the_right_dict(
+    #             "single_prices"
+    #         )
+    #         stock_dict = (
+    #             single_stock_prices.single_stock_data
+    #         )  # tihs is now a dict, where I can iterate using symbols
 
-    if len(st.session_state.selected_symbols) >= 1:
-        # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
-        single_stock_prices = pipeline.multiple_dicts.get_the_right_dict(
-            "single_prices"
-        )
-        stock_dict = (
-            single_stock_prices.single_stock_data
-        )  # tihs is now a dict, where I can iterate using symbols
+    #         # Below for dev / debug purpose
+    #         # print(type(stock_dict))
+    #         # for key,value in stock_dict.items():
+    #         #     print(f'key {key}, value : {value}')
 
-        # Below for dev / debug purpose
-        # print(type(stock_dict))
-        # for key,value in stock_dict.items():
-        #     print(f'key {key}, value : {value}')
+    #         my_symbols = st.session_state.selected_symbols
+    #         symbol_df_builder = Dataframe_combine_builder()
+    #         df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
 
-        my_symbols = st.session_state.selected_symbols
-        symbol_df_builder = pipeline.Dataframe_combine_builder()
-        df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
+    #         # merge those by columns
+    #         if df_list:
+    #             merged_lists = multiple_data_frame.Dataframe_combine_builder()
+    #             st.session_state.merged_df_one = merged_lists.list_concacenate(df_list)
+    #             st.dataframe(st.session_state.merged_df_one, width="stretch")
+    #         else:
+    #             st.warning("No data for symbols")
 
-        # merge those by columns
-        if df_list:
-            merged_lists = multiple_data_frame.Dataframe_combine_builder()
-            st.session_state.merged_df_one = merged_lists.list_concacenate(df_list)
-            st.dataframe(st.session_state.merged_df_one, width="stretch")
-        else:
-            st.warning("No data for symbols")
+    #     if (
+    #         st.session_state.submit_button
+    #         and len(st.session_state.selected_symbols) >= 1
+    #     ):
+    #         with st.sidebar:
+    #             # Leave for later to add some additional options for charts, for now, single charts are fine
+    #             # st.title(":small[Charts]")
+    #             # if (
+    #             #     st.session_state.submit_button
+    #             #     and len(st.session_state.selected_symbols) >= 2
+    #             # ):
+    #             #     relative_comparison = st.sidebar.checkbox(
+    #             #         "Relative comparison", value=False, key="relative_comparison"
+    #             #     )
+    #             st.title(":small[Basic symbol information]")
+    #             if st.session_state.submit_button:
+    #                 if len(st.session_state.selected_symbols) >= 1:
+    #                     show_stock_profile = st.sidebar.checkbox(
+    #                         "Companies profile", value=False, key="show_stock_profile"
+    #                     )
+    #                     show_basic_numbers = st.sidebar.checkbox(
+    #                         "Basic numbers", value=False, key="show_basic_numbers"
+    #                     )
+    #                     if len(st.session_state.selected_symbols) >= 2:
+    #                         # show_stock_profile = st.sidebar.checkbox(
+    #                         #     "Companies profile", value=False, key="show_stock_profile"
+    #                         # )
+    #                         show_correlation = st.sidebar.checkbox(
+    #                             "Correlation", value=False, key="show_correlation"
+    #                         )
 
-    if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 1:
-        with st.sidebar:
-            # Leave for later to add some additional options for charts, for now, single charts are fine
-            # st.title(":small[Charts]")
-            # if (
-            #     st.session_state.submit_button
-            #     and len(st.session_state.selected_symbols) >= 2
-            # ):
-            #     relative_comparison = st.sidebar.checkbox(
-            #         "Relative comparison", value=False, key="relative_comparison"
-            #     )
-            st.title(":small[Basic symbol information]")
-            if st.session_state.submit_button:
-                if len(st.session_state.selected_symbols) >= 1:
-                    show_stock_profile = st.sidebar.checkbox(
-                        "Companies profile", value=False, key="show_stock_profile"
-                    )
-                    show_basic_numbers = st.sidebar.checkbox(
-                        "Basic numbers", value=False, key="show_basic_numbers"
-                    )
-                    if len(st.session_state.selected_symbols) >= 2:
-                        # show_stock_profile = st.sidebar.checkbox(
-                        #     "Companies profile", value=False, key="show_stock_profile"
-                        # )
-                        show_correlation = st.sidebar.checkbox(
-                            "Correlation", value=False, key="show_correlation"
-                        )
+    #         # (
+    #         #     st.session_state.submit_button
+    #         #     and len(st.session_state.selected_symbols) >= 1
+    # ):
+    #     show_stock_profile = st.sidebar.checkbox(
+    #         "Companies profile", value=False, key="show_stock_profile"
+    #     )
+    # elif (
+    #     st.session_state.submit_button
+    #     and len(st.session_state.selected_symbols) >= 2
+    # ):
+    #     show_correlation = st.sidebar.checkbox(
+    #         "Correlation", value=False, key="show_correlation"
+    #     )
 
-            # (
-            #     st.session_state.submit_button
-            #     and len(st.session_state.selected_symbols) >= 1
-            # ):
-            #     show_stock_profile = st.sidebar.checkbox(
-            #         "Companies profile", value=False, key="show_stock_profile"
-            #     )
-            # elif (
-            #     st.session_state.submit_button
-            #     and len(st.session_state.selected_symbols) >= 2
-            # ):
-            #     show_correlation = st.sidebar.checkbox(
-            #         "Correlation", value=False, key="show_correlation"
-            #     )
-
-            # if (
-            #     st.session_state.submit_button
-            #     and len(st.session_state.selected_symbols) >= 1
-            # ):
-            #     show_mean = st.sidebar.checkbox("Mean", value=False, key="show_mean")
+    # if (
+    #     st.session_state.submit_button
+    #     and len(st.session_state.selected_symbols) >= 1
+    # ):
+    #     show_mean = st.sidebar.checkbox("Mean", value=False, key="show_mean")
 
     # logic below for correlation calc and display
+    if (
+        st.session_state.selected_broker == "Alpha vantage_test"
+        or st.session_state.selected_broker == "Twelve data"
+    ):
+        if len(st.session_state.selected_symbols) >= 1:
+            # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
+
+            single_stock_prices = st.session_state.multi_builder.get_the_right_dict(
+                "single_prices"
+            )
+
+            # Below for dev / debug purpose
+            # print(type(stock_dict))
+            # for key,value in stock_dict.items():
+            #     print(f'key {key}, value : {value}')
+
+            my_symbols = st.session_state.selected_symbols
+            symbol_df_builder = multiple_data_frame.Dataframe_combine_builder()
+            df_list = symbol_df_builder.list_merger(single_stock_prices, my_symbols)
+            print(df_list)
+            print("test")
+
+            # merge those by columns
+            if df_list:
+                merged_lists = multiple_data_frame.Dataframe_combine_builder()
+                st.session_state.merged_df_one = merged_lists.list_concacenate(df_list)
+                st.dataframe(st.session_state.merged_df_one, width="stretch")
+                print(st.session_state.merged_df_one)
+            else:
+                st.warning("No data for symbols")
+
+        if (
+            st.session_state.submit_button
+            and len(st.session_state.selected_symbols) >= 1
+        ):
+            with st.sidebar:
+                st.title(":small[Basic symbol information]")
+                if st.session_state.submit_button:
+                    if len(st.session_state.selected_symbols) >= 1:
+                        show_stock_profile = st.sidebar.checkbox(
+                            "Companies profile", value=False, key="show_stock_profile"
+                        )
+                        show_basic_numbers = st.sidebar.checkbox(
+                            "Basic numbers", value=False, key="show_basic_numbers"
+                        )
+                        if len(st.session_state.selected_symbols) >= 2:
+                            # show_stock_profile = st.sidebar.checkbox(
+                            #     "Companies profile", value=False, key="show_stock_profile"
+                            # )
+                            show_correlation = st.sidebar.checkbox(
+                                "Correlation", value=False, key="show_correlation"
+                            )
 
 
 with tab2:
@@ -357,140 +426,291 @@ with tab2:
 
 
 with tab3:
-    if len(st.session_state.selected_symbols) >= 1:
-        len_of_selected_symbols = len(st.session_state.selected_symbols)
-    else:
-        len_of_selected_symbols = 1
-    cols = st.columns(len_of_selected_symbols)
+    if (
+        st.session_state.selected_broker == "Alpha vantage_test"
+        or st.session_state.selected_broker == "Twelve data"
+    ):
 
-    if len(st.session_state.selected_symbols) >= 1:
+        if len(st.session_state.selected_symbols) >= 1:
+            len_of_selected_symbols = len(st.session_state.selected_symbols)
+        else:
+            len_of_selected_symbols = 1
+        cols = st.columns(len_of_selected_symbols)
 
-        if st.session_state.show_basic_numbers is True:
+        if len(st.session_state.selected_symbols) >= 1:
 
-            single_timeframe_returns = pipeline.multiple_dicts.get_the_right_dict(
-                "single_timeframe_returns"
-            )
-            timeframe_returns_dict = single_timeframe_returns.single_stock_data
-            print("dlugosc listy", len(timeframe_returns_dict))
-            for i in timeframe_returns_dict:
-                print(i)
-                print(type(i))
+            if st.session_state.show_basic_numbers is True:
+                print()
 
-            stock_dict = single_stock_prices.single_stock_data
+                # print("dlugosc_listy", len(single_timeframe_returns))
+                # for i in single_timeframe_returns:
+                #     print(i)
+                #     print(type(i))
 
-            # want to see for which symbols where the arrays built,
-            columns = st.session_state.merged_df_one.columns
-            merged_df_array = numpy_calcs.Numpy_metrics_calcs.to_numpy(
-                st.session_state.merged_df_one
-            )
-            calc_array = numpy_calcs.Numpy_metrics_calcs(merged_df_array)
+                columns = st.session_state.merged_df_one.columns
+                merged_df_array = numpy_calcs.Numpy_metrics_calcs.to_numpy(
+                    st.session_state.merged_df_one
+                )
+                calc_array = numpy_calcs.Numpy_metrics_calcs(merged_df_array)
 
-            for i, s in enumerate(st.session_state.selected_symbols):
-                with cols[i]:
-                    # add here a function which will pull the start and end date frm the dataframe
-                    st.markdown(f"### Stock symbol : {s}")
+                for i, s in enumerate(st.session_state.selected_symbols):
+                    with cols[i]:
+                        # add here a function which will pull the start and end date frm the dataframe
+                        st.markdown(f"### Stock symbol : {s}")
 
-                    start_date = single_data_frame.Underlying_data_frame.first_date(
-                        st.session_state.merged_df_one
-                    )
-                    end_date = single_data_frame.Underlying_data_frame.last_date(
-                        st.session_state.merged_df_one
-                    )
+                        start_date = single_data_frame.Underlying_data_frame.first_date(
+                            st.session_state.merged_df_one
+                        )
+                        end_date = single_data_frame.Underlying_data_frame.last_date(
+                            st.session_state.merged_df_one
+                        )
 
-                    st.write(f"📅End date : {end_date} ")
-                    st.write(f"📅Start date : {start_date} ")
+                        st.write(f"📅End date : {end_date} ")
+                        st.write(f"📅Start date : {start_date} ")
 
-                    last_price = calc_array.price_last(merged_df_array[:, i])
-                    # st.write(f"Last price : {last_price}")
-                    st.metric(label="Last close price", value=last_price)
+                        last_price = calc_array.price_last(merged_df_array[:, i])
+                        # st.write(f"Last price : {last_price}")
+                        st.metric(label="Last close price", value=last_price)
 
-                    price_min = calc_array.min_calc(merged_df_array[:, i])
-                    # st.write(f"Min : {price_min}")
-                    st.metric(label="Min", value=f"{price_min}")
+                        price_min = calc_array.min_calc(merged_df_array[:, i])
+                        # st.write(f"Min : {price_min}")
+                        st.metric(label="Min", value=f"{price_min}")
 
-                    price_max = calc_array.max_calc(merged_df_array[:, i])
-                    # st.write(f"Max : {price_max}")
-                    st.metric(label="Max", value=price_max)
+                        price_max = calc_array.max_calc(merged_df_array[:, i])
+                        # st.write(f"Max : {price_max}")
+                        st.metric(label="Max", value=price_max)
 
-                    price_mean = calc_array.mean_calc(merged_df_array[:, i])
-                    # st.write(f"Mean : {price_mean}")
-                    st.metric(label="Mean Price", value=price_mean)
+                        price_mean = calc_array.mean_calc(merged_df_array[:, i])
+                        # st.write(f"Mean : {price_mean}")
+                        st.metric(label="Mean Price", value=price_mean)
 
-                    mean_daily_return = calc_array.return_calcs_mean(
-                        merged_df_array[:, i]
-                    )
-                    # st.write(f"Mean daily return(%): {mean_daily_return}")
-                    st.metric(
-                        label=f"Mean {price_type} return",
-                        value=f"{mean_daily_return:.4f} %",
-                    )
+                        mean_daily_return = calc_array.return_calcs_mean(
+                            merged_df_array[:, i]
+                        )
+                        # st.write(f"Mean daily return(%): {mean_daily_return}")
+                        st.metric(
+                            label=f"Mean {price_type} return",
+                            value=f"{mean_daily_return:.4f} %",
+                        )
 
-                    median_daily_return = calc_array.return_calcs_median(
-                        merged_df_array[:, i]
-                    )
-                    # st.write(f"Mean daily return(%): {mean_daily_return}")
-                    st.metric(
-                        label=f"Median {price_type} return(%)",
-                        value=median_daily_return,
-                    )
+                        median_daily_return = calc_array.return_calcs_median(
+                            merged_df_array[:, i]
+                        )
+                        # st.write(f"Mean daily return(%): {mean_daily_return}")
+                        st.metric(
+                            label=f"Median {price_type} return(%)",
+                            value=median_daily_return,
+                        )
 
-                    return_min = calc_array.daily_return(merged_df_array[:, i])
-                    return_min = calc_array.min_calc(return_min) * 100
-                    # st.write(f"Min : {price_min}")
-                    st.metric(
-                        label=f"Min {price_type} return", value=f"{return_min:.4f} %"
-                    )
+                        return_min = calc_array.daily_return(merged_df_array[:, i])
+                        return_min = calc_array.min_calc(return_min) * 100
+                        # st.write(f"Min : {price_min}")
+                        st.metric(
+                            label=f"Min {price_type} return",
+                            value=f"{return_min:.4f} %",
+                        )
 
-                    return_max = calc_array.daily_return(merged_df_array[:, i])
-                    return_max = calc_array.max_calc(return_max) * 100
-                    # st.write(f"Min : {price_min}")
-                    st.metric(
-                        label=f"Max {price_type} return", value=f"{return_max:.4f} %"
-                    )
+                        return_max = calc_array.daily_return(merged_df_array[:, i])
+                        return_max = calc_array.max_calc(return_max) * 100
+                        # st.write(f"Min : {price_min}")
+                        st.metric(
+                            label=f"Max {price_type} return",
+                            value=f"{return_max:.4f} %",
+                        )
 
-                    return_st_dev = calc_array.st_dev_calc(merged_df_array[:, i])
-                    return_st_dev = return_st_dev * 100
-                    st.metric(
-                        label=f"{price_type.capitalize()} standard deviation",
-                        value=f"{return_st_dev:.4f} %",
-                    )
+                        return_st_dev = calc_array.st_dev_calc(merged_df_array[:, i])
+                        return_st_dev = return_st_dev * 100
+                        st.metric(
+                            label=f"{price_type.capitalize()} standard deviation",
+                            value=f"{return_st_dev:.4f} %",
+                        )
 
-                    cumulat_return = calc_array.cumulative_return(merged_df_array[:, i])
-                    # st.write(f"Cumulative return for given period : {cumulat_return} %")
-                    st.metric(
-                        label="Cumulative return for given period",
-                        value=f"{cumulat_return} %",
-                    )
+                        cumulat_return = calc_array.cumulative_return(
+                            merged_df_array[:, i]
+                        )
+                        # st.write(f"Cumulative return for given period : {cumulat_return} %")
+                        st.metric(
+                            label="Cumulative return for given period",
+                            value=f"{cumulat_return} %",
+                        )
 
-        if st.session_state.show_stock_profile is True:
-            for i, s in enumerate(st.session_state.selected_symbols):
-                with cols[i]:
+            if st.session_state.show_stock_profile is True:
+                single_company_info = st.session_state.finhub_info.get_the_right_dict(
+                    "single_company_info"
+                )
+                for i, s in enumerate(st.session_state.selected_symbols):
+                    with cols[i]:
 
-                    single_company_info = (
-                        pipeline.dict_of_dift_finhub.get_the_right_dict(
-                            "single_company_info"
+                        # print(type(single_company_info))
+                        # print("SYBMOL", s)
+                  
+                        value = single_company_info.get(s)
+                        # print(value)
+                        # print(type(value))
+
+                        value_df = pd.DataFrame(
+                            value.items(), columns=["Label", "Value"]
+                        )
+                        st.markdown(f"Symbol: {s}")
+                        st.dataframe(value_df, hide_index=True, width="stretch")
+
+                       
+
+        if st.session_state.show_correlation is True:
+            # df_list = symbol_df_builder.list_merger(stock_dict, my_symbols) # seem to be not required
+            # merge those by columns
+            if df_list:
+                correlation_builder = correlation_helper(df_list)
+                st.markdown("Calculated correlation is:")
+                st.dataframe(correlation_builder, width="stretch")
+
+        elif st.session_state.selected_broker == "Alpha vantage":
+            if len(st.session_state.selected_symbols) >= 1:
+                len_of_selected_symbols = len(st.session_state.selected_symbols)
+            else:
+                len_of_selected_symbols = 1
+            cols = st.columns(len_of_selected_symbols)
+
+            if len(st.session_state.selected_symbols) >= 1:
+
+                if st.session_state.show_basic_numbers is True:
+
+                    single_timeframe_returns = (
+                        pipeline.multiple_dicts.get_the_right_dict(
+                            "single_timeframe_returns"
                         )
                     )
-                    print(type(single_company_info))
-                    print("SYBMOL", s)
-                    single_profile = (
-                        pipeline.single_company_info.get_the_right_first_level_dict(s)
-                    )
-                    st.dataframe(
-                        {
-                            "Label": list(single_profile.keys()),
-                            "value": list(single_profile.values()),
-                        },
-                        hide_index=True,
-                    )
+                    timeframe_returns_dict = single_timeframe_returns.single_stock_data
+                    print("dlugosc listy", len(timeframe_returns_dict))
+                    for i in timeframe_returns_dict:
+                        print(i)
+                        print(type(i))
 
-    if st.session_state.show_correlation is True:
-        # df_list = symbol_df_builder.list_merger(stock_dict, my_symbols) # seem to be not required
-        # merge those by columns
-        if df_list:
-            correlation_builder = correlation_helper(df_list)
-            st.markdown("Calculated correlation is:")
-            st.dataframe(correlation_builder, width="stretch")
+                    stock_dict = single_stock_prices.single_stock_data
+
+                    # want to see for which symbols where the arrays built,
+                    columns = st.session_state.merged_df_one.columns
+                    merged_df_array = numpy_calcs.Numpy_metrics_calcs.to_numpy(
+                        st.session_state.merged_df_one
+                    )
+                    calc_array = numpy_calcs.Numpy_metrics_calcs(merged_df_array)
+
+                    for i, s in enumerate(st.session_state.selected_symbols):
+                        with cols[i]:
+                            # add here a function which will pull the start and end date frm the dataframe
+                            st.markdown(f"### Stock symbol : {s}")
+
+                            start_date = (
+                                single_data_frame.Underlying_data_frame.first_date(
+                                    st.session_state.merged_df_one
+                                )
+                            )
+                            end_date = (
+                                single_data_frame.Underlying_data_frame.last_date(
+                                    st.session_state.merged_df_one
+                                )
+                            )
+
+                            st.write(f"📅End date : {end_date} ")
+                            st.write(f"📅Start date : {start_date} ")
+
+                            last_price = calc_array.price_last(merged_df_array[:, i])
+                            # st.write(f"Last price : {last_price}")
+                            st.metric(label="Last close price", value=last_price)
+
+                            price_min = calc_array.min_calc(merged_df_array[:, i])
+                            # st.write(f"Min : {price_min}")
+                            st.metric(label="Min", value=f"{price_min}")
+
+                            price_max = calc_array.max_calc(merged_df_array[:, i])
+                            # st.write(f"Max : {price_max}")
+                            st.metric(label="Max", value=price_max)
+
+                            price_mean = calc_array.mean_calc(merged_df_array[:, i])
+                            # st.write(f"Mean : {price_mean}")
+                            st.metric(label="Mean Price", value=price_mean)
+
+                            mean_daily_return = calc_array.return_calcs_mean(
+                                merged_df_array[:, i]
+                            )
+                            # st.write(f"Mean daily return(%): {mean_daily_return}")
+                            st.metric(
+                                label=f"Mean {price_type} return",
+                                value=f"{mean_daily_return:.4f} %",
+                            )
+
+                            median_daily_return = calc_array.return_calcs_median(
+                                merged_df_array[:, i]
+                            )
+                            # st.write(f"Mean daily return(%): {mean_daily_return}")
+                            st.metric(
+                                label=f"Median {price_type} return(%)",
+                                value=median_daily_return,
+                            )
+
+                            return_min = calc_array.daily_return(merged_df_array[:, i])
+                            return_min = calc_array.min_calc(return_min) * 100
+                            # st.write(f"Min : {price_min}")
+                            st.metric(
+                                label=f"Min {price_type} return",
+                                value=f"{return_min:.4f} %",
+                            )
+
+                            return_max = calc_array.daily_return(merged_df_array[:, i])
+                            return_max = calc_array.max_calc(return_max) * 100
+                            # st.write(f"Min : {price_min}")
+                            st.metric(
+                                label=f"Max {price_type} return",
+                                value=f"{return_max:.4f} %",
+                            )
+
+                            return_st_dev = calc_array.st_dev_calc(
+                                merged_df_array[:, i]
+                            )
+                            return_st_dev = return_st_dev * 100
+                            st.metric(
+                                label=f"{price_type.capitalize()} standard deviation",
+                                value=f"{return_st_dev:.4f} %",
+                            )
+
+                            cumulat_return = calc_array.cumulative_return(
+                                merged_df_array[:, i]
+                            )
+                            # st.write(f"Cumulative return for given period : {cumulat_return} %")
+                            st.metric(
+                                label="Cumulative return for given period",
+                                value=f"{cumulat_return} %",
+                            )
+
+                if st.session_state.show_stock_profile is True:
+                    for i, s in enumerate(st.session_state.selected_symbols):
+                        with cols[i]:
+
+                            single_company_info = (
+                                st.session_state.finhub_info.get_the_right_dict(
+                                    "single_company_info"
+                                )
+                            )
+                            print(type(single_company_info))
+                            print("SYBMOL", s)
+                            single_profile = pipeline.single_company_info.get_the_right_first_level_dict(
+                                s
+                            )
+                            st.dataframe(
+                                {
+                                    "Label": list(single_profile.keys()),
+                                    "value": list(single_profile.values()),
+                                },
+                                hide_index=True,
+                            )
+
+            if st.session_state.show_correlation is True:
+                # df_list = symbol_df_builder.list_merger(stock_dict, my_symbols) # seem to be not required
+                # merge those by columns
+                if df_list:
+                    correlation_builder = correlation_helper(df_list)
+                    st.markdown("Calculated correlation is:")
+                    st.dataframe(correlation_builder, width="stretch")
 
 
 with tab4:
@@ -524,7 +744,7 @@ with tab4:
             st.session_state.select_benchmarks, st.session_state.selected_symbols
         )
         df_list_with_benchmark = symbol_df_builder.list_merger(
-            stock_dict, my_symbols_merged
+            single_stock_prices, my_symbols_merged
         )
         if df_list_with_benchmark:
             correlation_builder = correlation_helper(df_list_with_benchmark)
