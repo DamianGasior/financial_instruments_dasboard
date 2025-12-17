@@ -116,6 +116,9 @@ class Underlying_twelve_data_details(BaseDataTransformer):
         df_from_api_provider = df_from_api_provider[chosen_columns]
         print(df_from_api_provider)
         return df_from_api_provider
+    
+    def to_dataframe(self):
+        return super().to_dataframe()
 
     @staticmethod
     def show_columns(df):

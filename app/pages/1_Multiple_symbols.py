@@ -96,14 +96,6 @@ if "price_adjustment" not in st.session_state:
 if "selected_broker" not in st.session_state:
     st.session_state.selected_broker = None
 
-# if "multi_builder" not in st.session_state:
-#     st.session_state.multi_builder = Dataframe_combine_builder()
-
-# if "metrics_instance" not in st.session_state:
-#     st.session_state.metrics_instance = None
-
-# show_correlation = st.sidebar.checkbox("Correlation", value=False,  key="show_correlation" )
-
 
 st.session_state.my_benchmarks = ["SPY"]
 
@@ -120,7 +112,7 @@ tab00, tab0, tab1, tab2, tab3, tab4 = st.tabs(
 with tab00:
     st.markdown("Choose one of the data providers")
     broker_selection = st.radio(
-        "Select broker", ["Alpha vantage", "Alpha vantage_test", "Twelve data"], index=2
+        "Select broker", ["Alpha vantage_test", "Twelve data"], index=1
     )
     st.session_state.selected_broker = broker_selection
     st.markdown(
@@ -150,20 +142,36 @@ with tab0:
     # to change the value from defaulf , if the use  will choose  "adjusted"
     st.session_state.price_adjustment = price_adjustment
 
-    if price_adjustment == "non-adjusted":
+    if st.session_state.selected_broker == "Alpha vantage_test" : 
+
+        if price_adjustment == "non-adjusted":
+            if price_type == "daily":
+                st.session_state.price_type = "TIME_SERIES_DAILY"
+            elif price_type == "weekly":
+                st.session_state.price_type = "TIME_SERIES_WEEKLY"
+            elif price_type == "monhtly":
+                st.session_state.price_type = "TIME_SERIES_MONTHLY"
+        elif price_adjustment == "adjusted":
+            if price_type == "daily":
+                st.session_state.price_type = "TIME_SERIES_DAILY_ADJUSTED"
+            elif price_type == "weekly":
+                st.session_state.price_type = "TIME_SERIES_WEEKLY_ADJUSTED"
+            elif price_type == "monhtly":
+                st.session_state.price_type = "TIME_SERIES_MONTHLY_ADJUSTED"
+
+    elif st.session_state.selected_broker == "Twelve data":
+        if price_adjustment == "non-adjusted":
+            st.session_state.price_type = 'none'
+        elif price_adjustment == "adjusted":
+            st.session_state.price_type = 'all'
+            
         if price_type == "daily":
-            st.session_state.price_type = "TIME_SERIES_DAILY"
+            st.session_state.price_type = "1day"
         elif price_type == "weekly":
-            st.session_state.price_type = "TIME_SERIES_WEEKLY"
+            st.session_state.price_type = "1week"
         elif price_type == "monhtly":
-            st.session_state.price_type = "TIME_SERIES_MONTHLY"
-    elif price_adjustment == "adjusted":
-        if price_type == "daily":
-            st.session_state.price_type = "TIME_SERIES_DAILY_ADJUSTED"
-        elif price_type == "weekly":
-            st.session_state.price_type = "TIME_SERIES_WEEKLY_ADJUSTED"
-        elif price_type == "monhtly":
-            st.session_state.price_type = "TIME_SERIES_MONTHLY_ADJUSTED"
+            st.session_state.price_type = "1month"
+
 
     st.markdown("Once you are completed , please  hit **Submit button**")
 
@@ -177,17 +185,6 @@ with tab0:
             st.session_state.submit_button = True
 
             main()
-
-    # if st.button("Submit", key="submit_btn"):
-    #     st.session_state.submit_button = True
-    #     if pipeline.Underlying_data_frame():
-    #         test_response = Underlying_request_details.request_to_ext_api()
-    #         if test_response == 'Response is from cache.Seems there was already a similar request triggered today' :
-    #             st.write('udalo sie2')
-    #         elif test_response == 'Response was succesfull (200)' :
-    #             st.write('udalo sie1')
-    # pipeline.UnderlyingBuilder.run_pipeline.data
-    # st.write(pipeline.Underlying_data_frame())
 
 with tab1:
     with st.sidebar:
@@ -207,86 +204,7 @@ with tab1:
                 default=st.session_state.selected_symbols,
                 key="symbols_multiselect",
             )
-    # if st.session_state.selected_broker == "Alpha vantage":
-    #     if len(st.session_state.selected_symbols) >= 1:
-    #         # take the object  Dataframe_combine_builder from pipeline.multiple_dicts
-    #         single_stock_prices = st.session_state.multi_builder.get_the_right_dict(
-    #             "single_prices"
-    #         )
-    #         stock_dict = (
-    #             single_stock_prices.single_stock_data
-    #         )  # tihs is now a dict, where I can iterate using symbols
-
-    #         # Below for dev / debug purpose
-    #         # print(type(stock_dict))
-    #         # for key,value in stock_dict.items():
-    #         #     print(f'key {key}, value : {value}')
-
-    #         my_symbols = st.session_state.selected_symbols
-    #         symbol_df_builder = Dataframe_combine_builder()
-    #         df_list = symbol_df_builder.list_merger(stock_dict, my_symbols)
-
-    #         # merge those by columns
-    #         if df_list:
-    #             merged_lists = multiple_data_frame.Dataframe_combine_builder()
-    #             st.session_state.merged_df_one = merged_lists.list_concacenate(df_list)
-    #             st.dataframe(st.session_state.merged_df_one, width="stretch")
-    #         else:
-    #             st.warning("No data for symbols")
-
-    #     if (
-    #         st.session_state.submit_button
-    #         and len(st.session_state.selected_symbols) >= 1
-    #     ):
-    #         with st.sidebar:
-    #             # Leave for later to add some additional options for charts, for now, single charts are fine
-    #             # st.title(":small[Charts]")
-    #             # if (
-    #             #     st.session_state.submit_button
-    #             #     and len(st.session_state.selected_symbols) >= 2
-    #             # ):
-    #             #     relative_comparison = st.sidebar.checkbox(
-    #             #         "Relative comparison", value=False, key="relative_comparison"
-    #             #     )
-    #             st.title(":small[Basic symbol information]")
-    #             if st.session_state.submit_button:
-    #                 if len(st.session_state.selected_symbols) >= 1:
-    #                     show_stock_profile = st.sidebar.checkbox(
-    #                         "Companies profile", value=False, key="show_stock_profile"
-    #                     )
-    #                     show_basic_numbers = st.sidebar.checkbox(
-    #                         "Basic numbers", value=False, key="show_basic_numbers"
-    #                     )
-    #                     if len(st.session_state.selected_symbols) >= 2:
-    #                         # show_stock_profile = st.sidebar.checkbox(
-    #                         #     "Companies profile", value=False, key="show_stock_profile"
-    #                         # )
-    #                         show_correlation = st.sidebar.checkbox(
-    #                             "Correlation", value=False, key="show_correlation"
-    #                         )
-
-    #         # (
-    #         #     st.session_state.submit_button
-    #         #     and len(st.session_state.selected_symbols) >= 1
-    # ):
-    #     show_stock_profile = st.sidebar.checkbox(
-    #         "Companies profile", value=False, key="show_stock_profile"
-    #     )
-    # elif (
-    #     st.session_state.submit_button
-    #     and len(st.session_state.selected_symbols) >= 2
-    # ):
-    #     show_correlation = st.sidebar.checkbox(
-    #         "Correlation", value=False, key="show_correlation"
-    #     )
-
-    # if (
-    #     st.session_state.submit_button
-    #     and len(st.session_state.selected_symbols) >= 1
-    # ):
-    #     show_mean = st.sidebar.checkbox("Mean", value=False, key="show_mean")
-
-    # logic below for correlation calc and display
+   
     if (
         st.session_state.selected_broker == "Alpha vantage_test"
         or st.session_state.selected_broker == "Twelve data"
@@ -333,9 +251,6 @@ with tab1:
                             "Basic numbers", value=False, key="show_basic_numbers"
                         )
                         if len(st.session_state.selected_symbols) >= 2:
-                            # show_stock_profile = st.sidebar.checkbox(
-                            #     "Companies profile", value=False, key="show_stock_profile"
-                            # )
                             show_correlation = st.sidebar.checkbox(
                                 "Correlation", value=False, key="show_correlation"
                             )
@@ -563,155 +478,6 @@ with tab3:
                 correlation_builder = correlation_helper(df_list)
                 st.markdown("Calculated correlation is:")
                 st.dataframe(correlation_builder, width="stretch")
-
-        elif st.session_state.selected_broker == "Alpha vantage":
-            if len(st.session_state.selected_symbols) >= 1:
-                len_of_selected_symbols = len(st.session_state.selected_symbols)
-            else:
-                len_of_selected_symbols = 1
-            cols = st.columns(len_of_selected_symbols)
-
-            if len(st.session_state.selected_symbols) >= 1:
-
-                if st.session_state.show_basic_numbers is True:
-
-                    single_timeframe_returns = (
-                        pipeline.multiple_dicts.get_the_right_dict(
-                            "single_timeframe_returns"
-                        )
-                    )
-                    timeframe_returns_dict = single_timeframe_returns.single_stock_data
-                    print("dlugosc listy", len(timeframe_returns_dict))
-                    for i in timeframe_returns_dict:
-                        print(i)
-                        print(type(i))
-
-                    stock_dict = single_stock_prices.single_stock_data
-
-                    # want to see for which symbols where the arrays built,
-                    columns = st.session_state.merged_df_one.columns
-                    merged_df_array = numpy_calcs.Numpy_metrics_calcs.to_numpy(
-                        st.session_state.merged_df_one
-                    )
-                    calc_array = numpy_calcs.Numpy_metrics_calcs(merged_df_array)
-
-                    for i, s in enumerate(st.session_state.selected_symbols):
-                        with cols[i]:
-                            # add here a function which will pull the start and end date frm the dataframe
-                            st.markdown(f"### Stock symbol : {s}")
-
-                            start_date = (
-                                single_data_frame.Underlying_data_frame.first_date(
-                                    st.session_state.merged_df_one
-                                )
-                            )
-                            end_date = (
-                                single_data_frame.Underlying_data_frame.last_date(
-                                    st.session_state.merged_df_one
-                                )
-                            )
-
-                            st.write(f"📅End date : {end_date} ")
-                            st.write(f"📅Start date : {start_date} ")
-
-                            last_price = calc_array.price_last(merged_df_array[:, i])
-                            # st.write(f"Last price : {last_price}")
-                            st.metric(label="Last close price", value=last_price)
-
-                            price_min = calc_array.min_calc(merged_df_array[:, i])
-                            # st.write(f"Min : {price_min}")
-                            st.metric(label="Min", value=f"{price_min}")
-
-                            price_max = calc_array.max_calc(merged_df_array[:, i])
-                            # st.write(f"Max : {price_max}")
-                            st.metric(label="Max", value=price_max)
-
-                            price_mean = calc_array.mean_calc(merged_df_array[:, i])
-                            # st.write(f"Mean : {price_mean}")
-                            st.metric(label="Mean Price", value=price_mean)
-
-                            mean_daily_return = calc_array.return_calcs_mean(
-                                merged_df_array[:, i]
-                            )
-                            # st.write(f"Mean daily return(%): {mean_daily_return}")
-                            st.metric(
-                                label=f"Mean {price_type} return",
-                                value=f"{mean_daily_return:.4f} %",
-                            )
-
-                            median_daily_return = calc_array.return_calcs_median(
-                                merged_df_array[:, i]
-                            )
-                            # st.write(f"Mean daily return(%): {mean_daily_return}")
-                            st.metric(
-                                label=f"Median {price_type} return(%)",
-                                value=median_daily_return,
-                            )
-
-                            return_min = calc_array.daily_return(merged_df_array[:, i])
-                            return_min = calc_array.min_calc(return_min) * 100
-                            # st.write(f"Min : {price_min}")
-                            st.metric(
-                                label=f"Min {price_type} return",
-                                value=f"{return_min:.4f} %",
-                            )
-
-                            return_max = calc_array.daily_return(merged_df_array[:, i])
-                            return_max = calc_array.max_calc(return_max) * 100
-                            # st.write(f"Min : {price_min}")
-                            st.metric(
-                                label=f"Max {price_type} return",
-                                value=f"{return_max:.4f} %",
-                            )
-
-                            return_st_dev = calc_array.st_dev_calc(
-                                merged_df_array[:, i]
-                            )
-                            return_st_dev = return_st_dev * 100
-                            st.metric(
-                                label=f"{price_type.capitalize()} standard deviation",
-                                value=f"{return_st_dev:.4f} %",
-                            )
-
-                            cumulat_return = calc_array.cumulative_return(
-                                merged_df_array[:, i]
-                            )
-                            # st.write(f"Cumulative return for given period : {cumulat_return} %")
-                            st.metric(
-                                label="Cumulative return for given period",
-                                value=f"{cumulat_return} %",
-                            )
-
-                if st.session_state.show_stock_profile is True:
-                    for i, s in enumerate(st.session_state.selected_symbols):
-                        with cols[i]:
-
-                            single_company_info = (
-                                st.session_state.finhub_info.get_the_right_dict(
-                                    "single_company_info"
-                                )
-                            )
-                            print(type(single_company_info))
-                            print("SYBMOL", s)
-                            single_profile = pipeline.single_company_info.get_the_right_first_level_dict(
-                                s
-                            )
-                            st.dataframe(
-                                {
-                                    "Label": list(single_profile.keys()),
-                                    "value": list(single_profile.values()),
-                                },
-                                hide_index=True,
-                            )
-
-            if st.session_state.show_correlation is True:
-                # df_list = symbol_df_builder.list_merger(stock_dict, my_symbols) # seem to be not required
-                # merge those by columns
-                if df_list:
-                    correlation_builder = correlation_helper(df_list)
-                    st.markdown("Calculated correlation is:")
-                    st.dataframe(correlation_builder, width="stretch")
-
 
 with tab4:
 

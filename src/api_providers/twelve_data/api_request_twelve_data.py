@@ -33,18 +33,18 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
 
     def __init__(
         self,
-        symbol,
-        interval="1day",  # this needs to be driven bu the user as well( limit it only to 1day,1week,1 month)
-        outputsize=2,
+        symbol, 
+        adjust, # this is driven already by the users input
+        interval,  # this needs to be driven bu the user as well( limit it only to 1day,1week,1 month)
+        outputsize=252,
         dp=4,
         previous_close=True,
-        adjust=False,  # this is driven already by the users input
         apikey=API_KEY,
     ):
         self.apikey = apikey
         self.symbol = symbol
         self.interval = interval
-        self.output_size = outputsize
+        self.outputsize = outputsize
         self.decimal_places = dp
         self.previous_close = previous_close
         self.adjust = adjust
@@ -65,6 +65,7 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
     #     td_queue_of_requests.append(response)
 
     def execute_full_request(self):
+        print('request_executed_by_alpha_vantage')
         response = self.api_request()
         print(response)
         td_queue_of_requests.append(response)

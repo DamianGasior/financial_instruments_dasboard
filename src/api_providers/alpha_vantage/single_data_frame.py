@@ -1,10 +1,6 @@
 import pandas as pd
-from datetime import date
-from pathlib import Path
 import streamlit as st
-from dotenv import load_dotenv  # module which allows to read .env file
 from src.pipeline.base_single_data_transformer import BaseDataTransformer
-from src.api_providers.common import utils
 
 # from src.api_providers.alpha_vantage.api_request_alphavantage import (
 #     Underlying_request_details,
@@ -162,8 +158,8 @@ class Underlying_data_frame(BaseDataTransformer):
         return self
 
     # this method helps to obtain by y any other requestor class the dataframe, when they will be hitting object_name.to_dataframe()
-    # def to_dataframe(self):
-    #     return self.response_from_alpha
+    def to_dataframe(self):
+        return self.response_from_alpha
 
     @staticmethod
     def first_date(dataframe):
