@@ -4,13 +4,16 @@ import sys  # allows to access to  information used by interpreter , in this cas
 import os  # allows to interact with the operating system , like checking the paths , catalogs and so on
 from src.api_providers.finhub import finhub_websocket
 import threading
-from src.utils import data_finhub_websocket, streamlit_utils
+from src.utils import data_finhub_websocket
+from src.utils import streamlit_utils
+
+
 
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 import pandas as pd
 import websocket
 from src.api_providers.finhub.finhub_websocket import ws_connection
-
+from src.api_providers.finhub.finhub_websocket import finhub_python
 from streamlit_autorefresh import st_autorefresh
 
 from streamlit_card import card
@@ -87,13 +90,23 @@ if result:
         finhub_websocket.symbol_quotes_bond_yields
     )
 
-    # st.write("1", st.session_state.symbol_quotes_indices)
-    # st.write("2", st.session_state.symbol_quotes)
-    # # st.write("3", st.session_state.symbols_req_cryptos)
-    # # st.write("4", st.session_state.symbols_oanda_indices)
-    # st.write("5", st.session_state.symbol_quotes_fx_pairs)
-    # st.write("6", st.session_state.symbol_quotes_cmdty)
-    # st.write("7", st.session_state.symbol_quotes_bond_yields)
+# st.session_state.set_of_last_close_prices = (
+#     finhub_python.Finhub_data_builder.request_for_previous_close(
+#         st.session_state.symbols_req_cryptos
+#         # st.session_state.symbols_oanda_indices,
+#         # st.session_state.symbols_oanda_bond_yields,
+#         # st.session_state.symbols_oanda_ccy_pairs,
+#         # st.session_state.symbols_oanda_cmdty,
+#     )
+# )
+
+# st.write("1", st.session_state.symbol_quotes_indices)
+# st.write("2", st.session_state.symbol_quotes)
+# # st.write("3", st.session_state.symbols_req_cryptos)
+# # st.write("4", st.session_state.symbols_oanda_indices)
+# st.write("5", st.session_state.symbol_quotes_fx_pairs)
+# st.write("6", st.session_state.symbol_quotes_cmdty)
+# st.write("7", st.session_state.symbol_quotes_bond_yields)
 
 # else:
 #     st.session_state.symbol_quotes = {}

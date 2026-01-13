@@ -161,14 +161,4 @@ class Underlying_data_frame(BaseDataTransformer):
     def to_dataframe(self):
         return self.response_from_alpha
 
-    @staticmethod
-    def first_date(dataframe):
-        oldest_date = dataframe.index.min()
-        return oldest_date
-
-    @staticmethod
-    def last_date(dataframe):
-        newest_date = dataframe.index.max()
-        return newest_date
-
     # https://finnhub.io/docs/api/websocket-trades

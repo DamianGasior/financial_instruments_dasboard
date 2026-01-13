@@ -87,26 +87,28 @@ class Underlying_request_details(BaseAPIProvider):
             resp = requests.get(url, params=params)
             resp.raise_for_status()
             logging.info(f"Response type is : {resp}")
-            st.info(f"Response type is : {resp}")
+            # st.info(f"Response type is : {resp}")
+            response = resp.json()
+            print(response)
 
         except requests.exceptions.Timeout:
-            print("Error: Server did not respond.Try again later.")
-            return "Error: Server did not respond.Try again later."
+            logging.info("Error: Server did not respond.Try again later.")
+            raise Exception("Error: Server did not respond.Try again later.")
             # return None
 
         except requests.exceptions.HTTPError as e:
-            print(f"Http error: {e}")
-            return f"Http error: {e}"
+            logging.info(f"Http error: {e}")
+            raise Exception(f"Http error: {e}")
             # return None
 
         except requests.exceptions.RequestException as e:
-            print(f"Another error type: {e}")
-            return f"Another error type: {e}"
+            logging.info(f"Another error type: {e}")
+            raise Exception(f"Another error type: {e}")
             # return None
 
         if resp.status_code == 200 and "Information" in resp.json():
             timeout_message = resp.json()
-            print(
+            logging.info(
                 f"Limit API was reached, see comment : {timeout_message},wait 60 seconds please"
             )
             st.info(
@@ -116,15 +118,23 @@ class Underlying_request_details(BaseAPIProvider):
             return (
                 self.api_request()
             )  # expose this in the streamlit UI in the main page
-        elif resp.status_code == 200 and (getattr(resp, "from_cache", False)) is False:
-            logging.info("response was succesfull (200)")
-            st.success("response was succesfull (200)")
+        elif resp.status_code == 200 :
+            if response.get('Meta Data') and (getattr(resp, "from_cache", False)) is False:
+                logging.info("response was succesfull (200)")
+                logging.info(f"Request was executed succefully for symbol: {self.symbol}")
+                st.success(f"Data received for symbol : {response['Meta Data']['2. Symbol']}")
+
+            elif response.get('Error Message') and (getattr(resp, "from_cache", False)) is False:
+                logging.info(f"Response type is : {resp.status_code}. Response is {response}")
+                raise Exception(f"Unexpected response {response}")
+        
         elif getattr(resp, "from_cache", False) is True:
             logging.info("Response is from cache.")
-            st.info("Response is from cache.")
+            # st.info("Response is from cache.")
+        
         else:
-            print(f"Response failed : {resp.status_code}")
-            st.error(f"Response failed : {resp.status_code}")
+            logging.info(f"Response failed : {resp.status_code}")
+            raise Exception(f"Response failed : {resp.status_code}")
 
         response = resp.json()
         print(response)

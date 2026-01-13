@@ -7,16 +7,15 @@ import requests_cache
 import logging
 import streamlit as st
 from src.api_providers.twelve_data.to_dataframe_transofmer import (
-    Underlying_twelve_data_details
+    Underlying_twelve_data_details,
 )
-from src.api_providers.common import utils
-
 
 # requests_cache.clear()
 import sqlite3
 import pickle
 import os
 from dotenv import load_dotenv  # module which allows to read .env file
+from collections import defaultdict
 
 from src.pipeline.base_api_request import BaseAPIProvider
 
@@ -33,8 +32,8 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
 
     def __init__(
         self,
-        symbol, 
-        adjust, # this is driven already by the users input
+        symbol,
+        adjust,  # this is driven already by the users input
         interval,  # this needs to be driven bu the user as well( limit it only to 1day,1week,1 month)
         outputsize=252,
         dp=4,
@@ -52,44 +51,137 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
     def to_dict_params(self):
         return self.__dict__
 
+    # @st.cache_data(ttl=3600)  # ttl = time-to-live w sekundach
     def api_request(self):
         parameters = self.to_dict_params()
         url = "https://api.twelvedata.com/time_series?"
+        try:
+            resp = requests.get(url, params=parameters)
+            print(type(resp))  # <class 'requests.models.Response'>
+            response = resp.json()
+            print(response)
+            print(type(response))  # <class 'dict'>
+            # if resp.status_code == 200
+            code = response.get("code")
+            message = response.get("message")
 
-        resp = requests.get(url, params=parameters)
-        response = resp.json()
-        print(response)
-        return response
+            logging.info(f"Response type is : {resp.status_code}")
 
-    # def attach_to_queue(response):
-    #     td_queue_of_requests.append(response)
+            if resp.status_code == 200:
+                # for success scenario
+                if "meta" in resp.json():
+                    logging.info(
+                        f"Request was executed succefully for symbol: {self.symbol}"
+                    )
+                    symbol_received = response["meta"]["symbol"]
+                    if symbol_received in st.session_state.my_benchmarks:
+                        st.success(
+                            # f"""Data received for symbol: {response["meta"]["symbol"]}"""
+                            f"""Data received for bechmark symbol: {symbol_received}"""
+                        )
+                    else:
+                        st.success(
+                            # f"""Data received for symbol: {response["meta"]["symbol"]}"""
+                            f"""Data received for symbol: {symbol_received}"""
+                        )
+
+                    return response
+                # in case API will come back with an error
+                elif "code" in response.keys():
+                    logging.info(f"Response type is : {code}. Response is {message}")
+
+                    # st.error(
+                    #     f""""Resposne from broker : Error received with code: {code}.
+                    #         Message: {response["message"]}"""
+                    # )
+                    raise Exception(
+                        f'Broker error  {response.get("code")} : {response.get("message")}'
+                    )  # passing this to UI , will be picked up as e
+                # other unexpected cases
+                else:
+                    raise Exception(f"Unexpected response {response}")
+
+        except requests.RequestException as e:
+            raise Exception(
+                f"Transport erorr{e}"
+            )  # thanks to that we will get one f-string , ane
+            # will be not getting this error :
+            # TypeError: AlertMixin.error() takes 2 positional arguments but 3 were given
+            # when it would implemented like this : st.error("Error occured", e)
 
     def execute_full_request(self):
-        print('request_executed_by_alpha_vantage')
+        print("request_executed_by_twelve_data")
         response = self.api_request()
         print(response)
         td_queue_of_requests.append(response)
         return response
 
-    def create_transformer(self,api_request):
+    def create_transformer(self, api_request):
         return Underlying_twelve_data_details(api_request)
-    
+
     def cache_manager(self):
         return super().cache_manager()
-    
+
     def read_all_keys_values_from_api(self):
         return super().read_all_keys_values_from_api()
-    
-    
+
     def check_for_caches(self):
         return super().check_for_caches()
-    
+
     def read_caches(self):
         return super().read_caches()
-    
 
+    @staticmethod
+    @st.cache_data(ttl=600)
+    def symbol_search(users_input, apikey=API_KEY):
 
-    
+        initial_list = []
+        dummy_list = []
+        url = "https://api.twelvedata.com/symbol_search?symbol="
+        outputsize = 120
+        request = url + users_input + "&outputsize=120" + "&" + apikey
+        resp = requests.get(request)
+        response = resp.json()
+        print("raw_resposne:", response)
+        print(type(response))  # <class 'dict'>
+        # if resp.status_code == 200
+        returned_data = response.get("data")
+
+        for filtered_item in returned_data:
+            if filtered_item.get("instrument_type") in [
+                "Physical Currency",
+                "Digital Currency",
+            ]:
+                initial_list.append(filtered_item)
+
+        for filtered_item in returned_data:
+            if filtered_item.get("country") in ["United States"]:
+                initial_list.append(filtered_item)
+
+        print("initial_list", initial_list)
+
+        grouped = defaultdict(list)  # if there is no key, create an empty list
+
+        for item in initial_list:
+            grouped[item["instrument_type"]].append(item)
+
+        grouped = dict(grouped)
+        print(grouped)
+
+        
+        options={}
+
+        for group_name, value in grouped.items():
+            for item in value:
+                label=(
+                    f"[{group_name}]"
+                    f"{item['symbol']} - {item['instrument_name']}"
+                    f"exchange : {item['exchange']}"
+                )
+                options[label]=item
+                             
+        return options
+
 
 
     # def transform(self,response):

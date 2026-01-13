@@ -1,0 +1,62 @@
+financial_instruments_dashboard/
+│
+├── src/
+│   ├── main.py                            # file to run the progran
+│   ├── api_request_alphavantage.py        # get the data from rest api
+│   ├── metrics_calcs.py                   # simple analysis
+│   └── dashboard.py                       # graphs, dashboards (Streamlit) , tbc. 
+
+│
+│
+├── data/                   # local data
+│   ├── raw/                # raw data
+│   └── processed/          # data after processing
+│
+├── notebooks/              # Jupyter notebooks , tbc
+│
+├── tests/                  # unit tests(optional) , tbc. 
+│
+├── .gitignore
+├── requirements.txt
+├── README.md
+└── LICENSE
+
+
+
+---------
+
+Streamlit
+
+pomysly : 
+
+
+na samym początku jak użytkownik będzie wybieral underlyingi do akcji, to na początku do wybory będzie miał dane daily, weekly lub monthly 
+potem jak będzie wpisywal underlying to mu będzie wyskakiwala podpowiedz 
+
+
+wyoprzystac pliks sidebar i selection box, gdzie będzie można skakać miedzy underlyigami i będzie widać dzienny zwrot kursowi wykres będzie się zmienial 
+
+na sammy dole , tabele z korrelacje miedzy wybrana oloscia underlingow 
+
+
+
+----------PLAN DZIALANIA 
+
+zmienić nazwe z MEtrics na Basic stock infromation
+dodac deifnicje correlation , tak by użytkownik widział
+
+finhub bilbioteak, wykorzystać i rozszerzyć wiadomości 
+
+a potem websocket na sam koniec z podzialem na commodoties, treasuries, us indicies, cryptos z takim malutkim grafem pod pod spodem 
+
+wrzucić na chmure do streamlit 
+
+
+potem dodac metryki beta do Benchmark MEtrics
+rozszerzyć benchmark o nowe indeksy 
+i wykres procentowy wzrostu miedzy benchmarkiem a wybranymi produktami 
+
+na sam koniec ta podpowiedz do indeksow byłoby super zrobić. 
+
+
+potem zrobić BMPN tego plus UML 

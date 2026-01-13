@@ -27,6 +27,7 @@ class Underlying_metrics:
         self.underlying_df = underlying_df
         self.single_stock_data = {}
         self.dict_of_dict = {}
+        
 
     @property
     def return_for_symbol(self):
@@ -56,10 +57,22 @@ class Underlying_metrics:
 
     def price_chng_perct(self):
         # return_for_symbol='daily_return_'+self.symbol
-        
+
         self.underlying_df[self.return_for_symbol] = (
             self.underlying_df[self.symbol].pct_change() * 100
         ).round(4)
+        self.underlying_df = self.underlying_df.dropna()
+        print(self.underlying_df)
+        return self.underlying_df
+    
+
+    def price_chng_perct_for_list(self):
+        # return_for_symbol='daily_return_'+self.symbol
+
+        self.underlying_df[self.return_for_symbol] = (
+            self.underlying_df[self.symbol].pct_change() * 100
+        ).round(4)
+        self.underlying_df = self.underlying_df.dropna()
         print(self.underlying_df)
         return self.underlying_df
 
@@ -150,15 +163,16 @@ class Underlying_metrics:
         return value
 
     # this can be moved to some utils together with the same methods from mulitple_Data_frame file
+    
     def get_the_right_dict(self, name):
-        print("Klucze dostępne:", self.dict_of_dict.keys())
-        print("values dostępne:", self.dict_of_dict.values())
-        print("Szukany klucz name:", name)
+        # print("Klucze dostępne:", self.dict_of_dict.keys())
+        # print("values dostępne:", self.dict_of_dict.values())
+        # print("Szukany klucz name:", name)
         specifc_dict = self.dict_of_dict[name]
-        print(specifc_dict)
-        print(type(specifc_dict))
-        df = pd.DataFrame(specifc_dict)
-        return df
+        # print(specifc_dict)
+        # print(type(specifc_dict))
+        # df = pd.DataFrame(specifc_dict)
+        return specifc_dict
 
     def execute_metrics(self):
         print(self.symbol)
@@ -180,8 +194,34 @@ class Underlying_metrics:
 
     @staticmethod
     def calc_correlation(concac_df):
+        print(concac_df)
         corr_result = concac_df.corr()
         return corr_result
+    
+    @staticmethod
+    def price_chng_perct_for_list(stock_prices, list_of_symbols):
+        dummy_list=[]
+
+        for sel_symbol in list_of_symbols:
+            dummy_df=pd.DataFrame() 
+            dummy_df=dummy_df.copy()
+            asset_price = stock_prices.get(sel_symbol)
+            print(asset_price)
+            dummy_df.index = asset_price.index
+            print(dummy_df.index)
+            dummy_df[sel_symbol]=asset_price[sel_symbol].pct_change().dropna()
+           
+            print(dummy_df)
+            dummy_df.dropna(inplace=True)
+            print(dummy_df)
+            dummy_list.append(dummy_df)
+
+        print(len(dummy_list))
+        return dummy_list
+            
+
+
+ 
 
 
 # df_with_calcs=Underlying_metrics()

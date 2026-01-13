@@ -1,6 +1,5 @@
 import pandas as pd
 from src.pipeline.base_single_data_transformer import BaseDataTransformer
-from src.api_providers.common import utils
 
 # from src.main import symbol
 
@@ -80,21 +79,10 @@ class Underlying_twelve_data_details(BaseDataTransformer):
         return super().search_key_param()
 
     def set_date_as_index(df_from_api_provider):
-        print("test", df_from_api_provider)
-        # df_from_api_provider.index.name = (
-        #     "Date"  # assiging the name of the columns as 'Date' which is our index
-        # )
-        df_from_api_provider = df_from_api_provider.set_index("datetime")
-        print("test1", df_from_api_provider)
-        df_from_api_provider.index.name = (
-            "Date"  # changine the name of index column to "Date"
-        )
-        print("test2", df_from_api_provider)
-
+        # print("test", df_from_api_provider)
         df_from_api_provider.index = pd.to_datetime(df_from_api_provider.index).date
-        print("test3", df_from_api_provider)
-        # self.response_from_alpha.index=self.response_from_alpha.index.dt.date  <<this will not work
-        # changing the columns ( apart of date one ) to int or float
+        df_from_api_provider = df_from_api_provider.set_index("datetime")
+      
         for col in df_from_api_provider:
             if not pd.api.types.is_datetime64_any_dtype(
                 df_from_api_provider[col]
@@ -102,10 +90,13 @@ class Underlying_twelve_data_details(BaseDataTransformer):
                 df_from_api_provider[col] = pd.to_numeric(
                     df_from_api_provider[col], errors="coerce"
                 )  # applying the change and convert to a number , "coerce"  means if the value can not be changed to number, convert to NaN
+        
+        df_from_api_provider.index.name = "Date"
+        # print((df_from_api_provider.index.name))
+        df_from_api_provider = df_from_api_provider.sort_values("Date").groupby("Date", as_index="True").last()
         return df_from_api_provider
 
     def column_rename(df_from_api_provider, **kwargs):
-        # columns #thnink if it should be alist or a dict or waht ?
         df_from_api_provider.rename(columns=kwargs, inplace=True)
         return df_from_api_provider
 

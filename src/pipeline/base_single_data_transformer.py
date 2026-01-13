@@ -18,7 +18,7 @@ class BaseDataTransformer(ABC):
     @abstractmethod
     def search_key_param(api_response):
         pass
-    
+
     @abstractmethod
     def set_date_as_index(df_from_api_provider):
         pass
@@ -27,9 +27,10 @@ class BaseDataTransformer(ABC):
     def column_rename(df_from_api_provider, **kwargs):
         pass
 
-
     @abstractmethod
     def leave_only_columns(df_from_api_provider, *args):
         pass
 
- 
+    @abstractmethod
+    def to_dataframe(self):
+        pass

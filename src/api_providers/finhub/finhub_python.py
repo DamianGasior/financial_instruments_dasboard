@@ -19,12 +19,13 @@ class Finhub_data_builder:
     def __init__(self):
         self.stock_companies_profile = {}
         self.dict_of_dict_finhub = {}
+        self.last_close_prices = {}
         # self.symbol = symbol
 
     @classmethod
-    # @st.cache_data
+    @st.cache_data
     def get_company_info(cls, symbol):
-        company_info = finnhub_client.company_profile2(symbol=symbol)  # symbol="AEM"
+        company_info = finnhub_client.company_profile2(symbol=symbol)
         print("company_info", company_info)
         print('function fired,"time":,', datetime.now().isoformat())
         if company_info == {}:
@@ -66,6 +67,22 @@ class Finhub_data_builder:
             'zawartosc values  - "single_company_info" ',
             self.dict_of_dict_finhub["single_company_info"].values(),
         )
+
+
+    # @st.cache_data
+    def request_for_previous_close(self, *args):
+        for selected_list in args:
+            for symbol in selected_list:
+                last_close_request = finnhub_client.quote(symbol)
+                if last_close_request is not None:
+                    close_price = last_close_request.get("pc")
+                    print(last_close_request)
+                    print(f'{symbol}-{close_price}')
+                    self.last_close_prices[symbol] = close_price
+        return self.last_close_prices
+
+
+
 
     # zasatanoiwic sie czy nie zroibic z list jednal self obiektow, by potem moc na nich latwioej pracowac
     # jak w przyszlosci ktos bedzie dodawal nowe listy do nich

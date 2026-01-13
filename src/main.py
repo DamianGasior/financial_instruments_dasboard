@@ -7,21 +7,23 @@ import streamlit as st
 from src.api_providers.twelve_data.api_request_twelve_data import (
     Underlying_twelve_data_reuquest,
 )
-from src.api_providers.common import utils, multiple_data_frame
+from src.api_providers.common import multiple_data_frame
 from src.metrics.metrics_calcs import Underlying_metrics
 from src.api_providers.finhub.finhub_python import Finhub_data_builder
+
+import logging
+
+from src.session_init import init_session_state
 
 # st.session_state.my_merged_list = ["PHYS", "AEM"]
 
 
-if "multi_builder" not in st.session_state:
-    st.session_state.multi_builder = multiple_data_frame.Dataframe_combine_builder()
-
-if "metrics_instance" not in st.session_state:
-    st.session_state.metrics_instance = Underlying_metrics()
+# if "multi_builder" not in st.session_state:   << dalem do pliku 1_Mulitple_symbols.py - zoabczymy czy tam zadzia;a
+#     st.session_state.multi_builder = multiple_data_frame.Dataframe_combine_builder()
 
 
 def main():
+    init_session_state()
 
     if st.session_state.my_merged_list:
 

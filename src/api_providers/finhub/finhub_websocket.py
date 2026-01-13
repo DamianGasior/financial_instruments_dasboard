@@ -3,6 +3,9 @@ import json
 import streamlit as st
 from queue import Queue
 from src.utils import data_finhub_websocket
+from src.api_providers.finhub import finhub_python
+# from src.session_init import init_session_state
+
 
 
 if "ws_open" not in st.session_state:
@@ -112,7 +115,7 @@ def on_open(ws):
 def start_web_socket():
 
     global ws_connection
-    
+
     websocket.enableTrace(True)
 
     ws_connection = websocket.WebSocketApp(
@@ -123,6 +126,9 @@ def start_web_socket():
     )
     ws_connection.on_open = on_open
     ws_connection.run_forever()
+   
+    # ws_connection.run_forever()
+
 
 
 # zrobic jakas dokumentacje jak dziala ten caly webscoket i callbacki , by to ladnie zrozumiec.

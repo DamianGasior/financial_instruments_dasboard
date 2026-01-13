@@ -86,3 +86,7 @@ def find_the_right_name(ticker_symbol):
         for ticker in value:
             if ticker_symbol == ticker:
                 return key
+
+
+
+
