@@ -168,21 +168,18 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
         grouped = dict(grouped)
         print(grouped)
 
-        
-        options={}
+        options = {}
 
         for group_name, value in grouped.items():
             for item in value:
-                label=(
+                label = (
                     f"[{group_name}]"
                     f"{item['symbol']} - {item['instrument_name']}"
                     f"exchange : {item['exchange']}"
                 )
-                options[label]=item
-                             
+                options[label] = item
+
         return options
-
-
 
     # def transform(self,response):
     #     transformer = Underlying_twelve_data_details(response)
