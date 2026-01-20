@@ -52,8 +52,8 @@ if PROJECT_ROOT not in sys.path:
 init_session_state()
 
 
-st.write("PAGE:", __file__)
-st.write(st.session_state)
+# st.write("PAGE:", __file__)  # this is for debugging purpose for dev work, shows the state of  all st.states
+# st.write(st.session_state)   # this is for debugging purpose for dev work , shows the state of  all st.states
 
 # st.session_state.my_benchmarks = ["SPY", "QQQ", "EEM", "GLD"]
 

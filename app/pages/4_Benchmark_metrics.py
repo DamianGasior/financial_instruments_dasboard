@@ -34,8 +34,8 @@ from src.session_init import init_session_state
 
 init_session_state()
 
-st.write("PAGE:", __file__)
-st.write(st.session_state)
+# st.write("PAGE:", __file__)  # this is for debugging purpose for dev work, shows the state of  all st.states
+# st.write(st.session_state)   # this is for debugging purpose for dev work, shows the state of  all st.states
 
 
 # from src.utils.streamalit_utlis import streamalit_utlis
