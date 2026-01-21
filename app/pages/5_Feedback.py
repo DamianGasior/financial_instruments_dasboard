@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import streamlit as st
 from email.message import EmailMessage
 import ssl
+import datetime
 
 from src.session_init import init_session_state
 
@@ -17,7 +18,7 @@ load_dotenv(GMAIL_TOKEN_PATH)
 GMAIL_TOKEN = os.getenv("gmail_app_token")
 
 Sender_Email = "feedback.project.pm@gmail.com"
-Receiver_Email = "damian.piotr.gasior@gmail.com"
+Receiver_Email = "feedback.project.pm@gmail.com"
 
 
 st.title("Feedback form")
@@ -31,7 +32,7 @@ feedback = st.text_area("Type your message below: ", "Example text", height=200)
 
 st.markdown(
     """The below information will be helpful for me to understand, who is viewing this dashboard
-    Data is anonymous. Your email is not stored. Only the below parameters and message.
+    Data is anonymous. Your email address is not stored. Only the below parameters and message.
     """
 )
 
@@ -48,11 +49,12 @@ source = st.radio(
     index=0,
 )
 
+execution_date_time=datetime.datetime.now()
 
 email = EmailMessage()
 email["From"] = Sender_Email
 email["To"] = Receiver_Email
-email["Subject"] = "Feedback_service_financial_dashboard"
+email["Subject"] = f"Feedback_service_financial_dashboard_{execution_date_time}_profile:{sender_type}_source:{source}"
 email.set_content(
     f"""{feedback} 
 Users profile : {sender_type}
@@ -84,6 +86,3 @@ st.markdown("Once you are ready with the feedback , please  hit **Send message**
 
 if st.button("Send message"):
     send_message()
-
-
-# Dodac komunikat ze wiadomosc zostala wuyslana, pytanie jak to mozna sprawdzic ?
