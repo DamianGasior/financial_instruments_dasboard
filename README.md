@@ -45,39 +45,39 @@
 
   ### Historical Data & Visualization
     
-    For selected instruments and benchmarks:
-    - Retrieve historical prices for a selected period:
-    - daily
-    - weekly
-    - monthly
-    - Display price charts for selected symbols
-    - Display basic descriptive information for US-listed stocks
+  For selected instruments and benchmarks:
+  - Retrieve historical prices for a selected period:
+  - daily
+  - weekly
+  - monthly
+  - Display price charts for selected symbols
+  - Display basic descriptive information for US-listed stocks
     
 
   ### Basic Statistical Metrics
     
-    For a selected time period:
-    - mean return
-    - cumulative return
-    - highest and lowest price
-    - standard deviation
+  For a selected time period:
+  - mean return
+  - cumulative return
+  - highest and lowest price
+  - standard deviation
     
 
   ### Correlation Analysis
     
-    - Calculate and display correlations between selected symbols and/or benchmarks
+  - Calculate and display correlations between selected symbols and/or benchmarks
     
 
   ### Risk & Performance Metrics
    
-    For selected symbols evaluated against multiple benchmarks (e.g. **SPY, QQQ, GLD, EEM**):
-    - beta
-    - volatility (standard deviation)
-    - Sharpe ratio
-    - correlation
-    - R² (coefficient of determination)
+  For selected symbols evaluated against multiple benchmarks (e.g. **SPY, QQQ, GLD, EEM**):
+  - beta
+  - volatility (standard deviation)
+  - Sharpe ratio
+  - correlation
+  - R² (coefficient of determination)
 
-    - Symbols and benchmarks are visualized on comparative charts, enabling quick assessment of relative performance and market positioning.
+  - Symbols and benchmarks are visualized on comparative charts, enabling quick assessment of relative performance and market positioning.
 
 
     
