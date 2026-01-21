@@ -143,7 +143,7 @@
 
     
 
-  # About me
+  # About the author
     
   This project was created as an educational initiative.
   More about the author can be found in the **About the author** section of the application
