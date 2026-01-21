@@ -54,7 +54,7 @@
     - Display basic descriptive information for US-listed stocks
     
 
-    ### Basic Statistical Metrics
+  ### Basic Statistical Metrics
     
     For a selected time period:
     - mean return
@@ -63,12 +63,12 @@
     - standard deviation
     
 
-    ### Correlation Analysis
+  ### Correlation Analysis
     
     - Calculate and display correlations between selected symbols and/or benchmarks
     
 
-    ### Risk & Performance Metrics
+  ### Risk & Performance Metrics
    
     For selected symbols evaluated against multiple benchmarks (e.g. **SPY, QQQ, GLD, EEM**):
     - beta
@@ -81,7 +81,7 @@
 
 
     
-    # Project Structure
+  # Project Structure
     ```    
     financial_instruments_dashboard/
     │
@@ -102,8 +102,8 @@
     ```    
 
    ## Development
-     pip install -r requirements.txt # required for deploy into streamlit cloud
-     pip install -r requirements-dev.txt # required for developer for local development
+  pip install -r requirements.txt # required for deploy into streamlit cloud
+  pip install -r requirements-dev.txt # required for developer for local development
 
 
   # How to Use
