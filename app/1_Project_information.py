@@ -21,11 +21,12 @@ def load_bpmn():
     bmpn_image = BPMN_PATH
     return bmpn_image
 
+
 @st.cache_data
 def load_readme():
     readme = README_PATH
     with readme.open(encoding="utf-8") as f:
-        readme_text=f.read()
+        readme_text = f.read()
     return readme_text
 
 
@@ -47,9 +48,8 @@ with tab1:
     )
 
 with tab2:
-    read_me=load_readme()
+    read_me = load_readme()
     st.write(read_me)
-    
 
 
 with tab3:

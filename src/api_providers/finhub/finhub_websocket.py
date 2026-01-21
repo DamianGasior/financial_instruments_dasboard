@@ -128,5 +128,3 @@ def start_web_socket():
     ws_connection.run_forever()
 
     # ws_connection.run_forever()
-
-
