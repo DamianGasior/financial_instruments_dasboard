@@ -72,7 +72,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
 with tab1:
     st.markdown("Choose one of the data providers")
     broker_selection = st.radio(
-        "Select broker", ["Alpha vantage_test", "Twelve data"], index=1
+        "Select broker", ["Alpha vantage", "Twelve data"], index=1
     )
     st.session_state.selected_broker = broker_selection
     st.markdown(
@@ -80,7 +80,7 @@ with tab1:
     )
 
 with tab2:
-    if st.session_state.selected_broker == "Alpha vantage_test":
+    if st.session_state.selected_broker == "Alpha vantage":
         with st.form("add_item_form", clear_on_submit=True):
             new_item = st.text_input("Enter a specfic stock symbol")
             # if st.session_state.selected_broker =="Twelve data":
@@ -168,7 +168,7 @@ with tab2:
     # to change the value from defaulf , if the use  will choose  "adjusted"
     st.session_state.price_adjustment = price_adjustment
 
-    if st.session_state.selected_broker == "Alpha vantage_test":
+    if st.session_state.selected_broker == "Alpha vantage":
 
         if price_adjustment == "non-adjusted":
             if price_type == "daily":
@@ -235,7 +235,7 @@ if st.session_state.submit_button:
             st.session_state.selected_symbols = st.session_state.ui_selected_symbols.copy()
 
         if (
-            st.session_state.selected_broker == "Alpha vantage_test"
+            st.session_state.selected_broker == "Alpha vantage"
             or st.session_state.selected_broker == "Twelve data"
         ):
             if len(st.session_state.selected_symbols) >= 1:
@@ -382,7 +382,7 @@ if st.session_state.submit_button:
 
     with tab5:
         if (
-            st.session_state.selected_broker == "Alpha vantage_test"
+            st.session_state.selected_broker == "Alpha vantage"
             or st.session_state.selected_broker == "Twelve data"
         ):
 
