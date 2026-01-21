@@ -16,15 +16,14 @@ GMAIL_TOKEN_PATH = Path(__file__).parent.parent / "src" / ".env"
 load_dotenv(GMAIL_TOKEN_PATH)
 GMAIL_TOKEN = os.getenv("gmail_app_token")
 
+Sender_Email = "feedback.project.pm@gmail.com"
+Receiver_Email = "damian.piotr.gasior@gmail.com"
+
 
 st.title("Feedback form")
 st.markdown(
     "I will appreciate any type of feedback, what you like and what could be improved"
 )
-
-
-Sender_Email = "feedback.project.pm@gmail.com"
-Receiver_Email = "damian.piotr.gasior@gmail.com"
 
 
 feedback = st.text_area("Type your message below: ", "Example text", height=200)
@@ -68,9 +67,16 @@ context = (
 
 
 def send_message():
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(Sender_Email, GMAIL_TOKEN)
-        server.send_message(email)
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(Sender_Email, GMAIL_TOKEN)
+            result = server.send_message(email)
+        if not result:  # basically checking if its empty
+            return st.success("Email was sent succesfully")
+        else:
+            None
+    except smtplib.SMTPException as e:
+        return st.error(f"error received {e}")
 
 
 st.markdown("Once you are ready with the feedback , please  hit **Send message**")
@@ -78,3 +84,6 @@ st.markdown("Once you are ready with the feedback , please  hit **Send message**
 
 if st.button("Send message"):
     send_message()
+
+
+# Dodac komunikat ze wiadomosc zostala wuyslana, pytanie jak to mozna sprawdzic ?
