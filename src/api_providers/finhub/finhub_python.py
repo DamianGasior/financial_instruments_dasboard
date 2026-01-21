@@ -3,12 +3,17 @@ import pandas as pd
 import streamlit as st
 import time
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+from pathlib import Path
 
 
 # https://github.com/Finnhub-Stock-API/finnhub-python
 
 
-API_KEY = "d4ee4ppr01qrumpf24fgd4ee4ppr01qrumpf24g0"
+FINHUB_KEY_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
+load_dotenv(FINHUB_KEY_PATH)
+API_KEY = os.getenv("finhub_key")
 
 
 # Setup client
@@ -33,18 +38,6 @@ class Finhub_data_builder:
 
         return company_info
 
-        # method which will allow to add per symbol each received information to a dictionary
-
-    # def add_stock_info(self, symbol, passed_comp_info):
-    #     self.stock_companies_profile[symbol] = passed_comp_info
-    #     return self.stock_companies_profile
-
-    # def add_dict_to_dict(
-    #     self, single_dict, name
-    # ):  # name to be like "single_company_info"
-    #     self.dict_of_dict_finhub[name] = single_dict
-    #     return self.dict_of_dict_finhub
-
     def get_the_right_first_level_dict(self, symbol):
         value = self.stock_companies_profile[symbol]
         print(value)
@@ -68,7 +61,6 @@ class Finhub_data_builder:
             self.dict_of_dict_finhub["single_company_info"].values(),
         )
 
-
     # @st.cache_data
     def request_for_previous_close(self, *args):
         for selected_list in args:
@@ -77,93 +69,12 @@ class Finhub_data_builder:
                 if last_close_request is not None:
                     close_price = last_close_request.get("pc")
                     print(last_close_request)
-                    print(f'{symbol}-{close_price}')
+                    print(f"{symbol}-{close_price}")
                     self.last_close_prices[symbol] = close_price
         return self.last_close_prices
-
-
-
-
-    # zasatanoiwic sie czy nie zroibic z list jednal self obiektow, by potem moc na nich latwioej pracowac
-    # jak w przyszlosci ktos bedzie dodawal nowe listy do nich
 
     @staticmethod
     def read_dict(passed_dict):
         for key, value in passed_dict.items():
             print("jestem tu")
             print(f"{key} : {value}")
-
-
-# example_test = Finhub_data_builder.get_company_info("AEM")
-# print(type(example_test))  # >> <class 'dict'>
-# Finhub_data_builder.read_dict(example_test)
-
-
-# single_stock = Finhub_data_builder.add_stock_info("AEM", example_test)
-# print(type(single_stock))  # >> <class 'dict'>
-
-# print("test")
-
-# Finhub_data_builder.read_dict((Finhub_data_builder.stock_companies_profile))
-
-
-# set_of_stocks = Finhub_data_builder.add_dict_to_dict(single_stock, "single_info")
-# Finhub_data_builder.read_dict((Finhub_data_builder.dict_of_dict_finhub))
-
-
-# reader_single_stock=single_stock.
-
-
-# single_dict= Finhub_data_builder.add_stock_info(single_stock,'company_info')
-
-
-# Company Profile
-# print(finnhub_client.company_profile2(symbol='AAPL'))
-# print(finnhub_client.company_profile(isin='US0378331005'))
-# print(finnhub_client.company_profile(cusip='037833100'))
-
-# # Financials as reported
-# print(finnhub_client.financials_reported(symbol='AAPL', freq='annual'))
-
-
-# Company News
-# Need to use _from instead of from to avoid conflict
-# print(finnhub_client.company_news('AAPL', _from="2025-11-01", to="2025-11-11"))
-
-
-# print(finnhub_client.stock_insider_sentiment('AAPL', '2021-01-01', '2022-03-01'))
-
-
-# print(finnhub_client.quote('AEM'))
-
-
-# print(finnhub_client.company_basic_financials('AAPL', 'metric'))
-
-# print(finnhub_client.symbol_lookup('AEM'))
-# print(company_info)
-
-# print("test_1")
-
-
-# df = pd.DataFrame(company_info, index=[0])
-# print(df)
-# print("test_2")
-# print(list(df.items()))
-
-# # df = pd.DataFrame(list(df.items()), columns=["ticker", "price"])
-
-# print("test AAPL")
-
-# data = {"ticker1": ["AAPL"], "price1": [180], "ticker": ["MSFT"], "price": [200]}
-# for key,value in data.items():
-#     print(f'{key} : {value}')
-
-# # data = [{"ticker1": "AAPL"}, {"price1": 180}, {"ticker": "MSFT", "price": 200}]
-# # df1 = pd.DataFrame(data)
-
-# # print(df1)
-
-
-# data = {"ticker": ["AAPL", "MSFT"], "price": [180, 370]}
-# df = pd.DataFrame(data)
-# print(df)

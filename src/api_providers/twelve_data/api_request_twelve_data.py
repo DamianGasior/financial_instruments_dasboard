@@ -19,9 +19,9 @@ from collections import defaultdict
 
 from src.pipeline.base_api_request import BaseAPIProvider
 
-
-API_KEY = "88b6ba35bcfc4bd3b70febcfe923cda6"
-
+TWELVEDATA_KEY_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
+load_dotenv(TWELVEDATA_KEY_PATH)
+API_KEY = os.getenv("apikey_twelve_data")
 
 # https://api.twelvedata.com/time_series?apikey=88b6ba35bcfc4bd3b70febcfe923cda6&symbol=AAPL&interval=1day&format=JSON&outputsize=100&previous_close=true&dp=4
 
