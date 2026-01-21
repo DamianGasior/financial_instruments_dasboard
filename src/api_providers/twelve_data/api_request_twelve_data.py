@@ -138,7 +138,6 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
         initial_list = []
         dummy_list = []
         url = "https://api.twelvedata.com/symbol_search?symbol="
-        outputsize = 120
         request = url + users_input + "&outputsize=120" + "&" + apikey
         resp = requests.get(request)
         response = resp.json()

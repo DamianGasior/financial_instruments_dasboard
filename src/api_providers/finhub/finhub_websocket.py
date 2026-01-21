@@ -4,8 +4,14 @@ import streamlit as st
 from queue import Queue
 from src.utils import data_finhub_websocket
 from src.api_providers.finhub import finhub_python
-# from src.session_init import init_session_state
+from pathlib import Path
+import os
+from dotenv import load_dotenv
 
+
+FINHUB_TOKEN_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
+load_dotenv(FINHUB_TOKEN_PATH)
+API_KEY = os.getenv("finhub_key")
 
 
 if "ws_open" not in st.session_state:
@@ -16,13 +22,6 @@ quotes_queue = Queue()
 
 ws_connection = None
 
-# symbols_set = set()
-
-
-# symbols_set_indices = set()
-
-
-# symbols_observed = ["AAPL", "AMZN","MSFT"]
 
 symbol_quotes = {}  # niech do tego odowolouje sie st.sessionState
 symbol_quotes_indices = {}
@@ -115,20 +114,19 @@ def on_open(ws):
 def start_web_socket():
 
     global ws_connection
+    tokenized_url = f"wss://ws.finnhub.io?token={API_KEY}"
 
     websocket.enableTrace(True)
 
     ws_connection = websocket.WebSocketApp(
-        "wss://ws.finnhub.io?token=d4ee4ppr01qrumpf24fgd4ee4ppr01qrumpf24g0",
+        tokenized_url,
         on_message=on_message,
         on_error=on_error,
         on_close=on_close,
     )
     ws_connection.on_open = on_open
     ws_connection.run_forever()
-   
+
     # ws_connection.run_forever()
 
 
-
-# zrobic jakas dokumentacje jak dziala ten caly webscoket i callbacki , by to ladnie zrozumiec.
