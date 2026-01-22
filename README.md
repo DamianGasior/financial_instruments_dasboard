@@ -108,7 +108,9 @@
 
   # How to Use
    
-  A short demo video (approximately 3 minutes) demonstrating the main functionalities of the application will be provided here.
+  A short demo video (approximately 3 minutes) demonstrating the main functionalities of the application will be provided here, link tbd.
+  
+  For now, please go direclty to : https://financial-instruments-dasboard.streamlit.app/ 
     
 
   # Project Characteristics & Disclaimer
