@@ -177,30 +177,35 @@ q_last_quote = finhub_websocket.get_specific_symbol()
 #                 value=st.session_state.symbol_quotes_cmdty.get(s, "missing quotes"),
 # )
 
-streamlit_utils.view_market_data(
-    "Indices",
-    st.session_state.symbols_oanda_indices,
-    st.session_state.symbol_quotes_indices,
-)
+if not st.session_state.websocket :
+    st.status("Loading prices...", state="running")
 
-streamlit_utils.view_market_data(
-    "Commodities",
-    st.session_state.symbols_oanda_cmdty,
-    st.session_state.symbol_quotes_cmdty,
-)
+elif st.session_state.websocket :
+    
+    streamlit_utils.view_market_data(
+        "Indices",
+        st.session_state.symbols_oanda_indices,
+        st.session_state.symbol_quotes_indices,
+    )
 
-streamlit_utils.view_market_data(
-    "Fx pairs",
-    st.session_state.symbols_oanda_ccy_pairs,
-    st.session_state.symbol_quotes_fx_pairs,
-)
+    streamlit_utils.view_market_data(
+        "Commodities",
+        st.session_state.symbols_oanda_cmdty,
+        st.session_state.symbol_quotes_cmdty,
+    )
 
-streamlit_utils.view_market_data(
-    "Bond yields",
-    st.session_state.symbols_oanda_bond_yields,
-    st.session_state.symbol_quotes_bond_yields,
-)
+    streamlit_utils.view_market_data(
+        "Fx pairs",
+        st.session_state.symbols_oanda_ccy_pairs,
+        st.session_state.symbol_quotes_fx_pairs,
+    )
 
-streamlit_utils.view_market_data(
-    "Cryptos", st.session_state.symbols_req_cryptos, st.session_state.symbol_quotes
-)
+    streamlit_utils.view_market_data(
+        "Bond yields",
+        st.session_state.symbols_oanda_bond_yields,
+        st.session_state.symbol_quotes_bond_yields,
+    )
+
+    streamlit_utils.view_market_data(
+        "Cryptos", st.session_state.symbols_req_cryptos, st.session_state.symbol_quotes
+    )

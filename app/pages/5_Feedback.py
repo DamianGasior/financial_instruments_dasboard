@@ -7,15 +7,17 @@ import streamlit as st
 from email.message import EmailMessage
 import ssl
 import datetime
-
+from src.utils.streamlit_utils import key_validation
 from src.session_init import init_session_state
 
 init_session_state()
 
 
 GMAIL_TOKEN_PATH = Path(__file__).parent.parent / "src" / ".env"
-load_dotenv(GMAIL_TOKEN_PATH)
-GMAIL_TOKEN = os.getenv("gmail_app_token")
+# load_dotenv(GMAIL_TOKEN_PATH)
+# key_name = os.getenv("gmail_app_token")
+key_name = "gmail_app_token"
+GMAIL_TOKEN = key_validation(GMAIL_TOKEN_PATH,key_name)
 
 Sender_Email = "feedback.project.pm@gmail.com"
 Receiver_Email = "feedback.project.pm@gmail.com"
