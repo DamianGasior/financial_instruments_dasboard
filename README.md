@@ -103,7 +103,7 @@
 
    ## Development
   pip install -r requirements.txt # required for deploy into streamlit cloud
-  pip install -r requirements-dev.txt # required for developer for local development
+  pip install -r requirements-dev.txt # useful  for developer for local development
 
 
   # How to Use
