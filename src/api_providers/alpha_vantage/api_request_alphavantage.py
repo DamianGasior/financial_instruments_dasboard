@@ -7,8 +7,7 @@ import requests_cache
 import logging
 import streamlit as st
 from collections import deque
-
-# requests_cache.clear()
+from src.utils.streamlit_utils import key_validation
 import sqlite3
 import pickle
 import os
@@ -32,9 +31,9 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 load_dotenv(BASE_DIR / ".env")  # loads are variables from .env file and caches those
 # load_dotenv(BASE_DIR / ".env_example")  # loads are variables from .env file and caches those
-API_KEY = os.getenv(
-    "apikey_alpha_vantage"
-)  # use the variable loaded from the line above
+key_name = "apikey_alpha_vantage"
+
+API_KEY = key_validation(BASE_DIR,key_name)
 
 # BASE_DIR_raw = Path(__file__).parent
 DATA_DIR = BASE_DIR / "data"

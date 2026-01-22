@@ -16,12 +16,16 @@ import pickle
 import os
 from dotenv import load_dotenv  # module which allows to read .env file
 from collections import defaultdict
-
+from src.utils.streamlit_utils import key_validation
 from src.pipeline.base_api_request import BaseAPIProvider
 
 TWELVEDATA_KEY_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
-load_dotenv(TWELVEDATA_KEY_PATH)
-API_KEY = os.getenv("apikey_twelve_data")
+# load_dotenv(TWELVEDATA_KEY_PATH)
+# API_KEY = os.getenv("apikey_twelve_data")
+key_name ="apikey_twelve_data"
+
+
+API_KEY = key_validation(TWELVEDATA_KEY_PATH, key_name)
 
 # https://api.twelvedata.com/time_series?apikey=88b6ba35bcfc4bd3b70febcfe923cda6&symbol=AAPL&interval=1day&format=JSON&outputsize=100&previous_close=true&dp=4
 
@@ -180,36 +184,4 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
 
         return options
 
-    # def transform(self,response):
-    #     transformer = Underlying_twelve_data_details(response)
-    #     return transformer.transform()
-
-
-# test_file = Underlying_twelve_data_reuquest(symbol="AAPL")
-# # test_file.to_dict_params()
-# test_file = test_file.api_request()
-# print("test_file", type(test_file))
-
-
-# transformed_test_file = Underlying_twelve_data_details(test_file)
-# testing = transformed_test_file.transform()
-
-# # transformed_test_file.show_columns(transformed_test_file)
-
-# print(type(transformed_test_file))
-
-# transformed_with_index = utils.set_date_as_index(testing)
-# print(transformed_with_index)
-
-
-# transformed_with_index = utils.column_rename(
-#     transformed_with_index, **{"close": "AAPL"}
-# )
-# print(transformed_with_index)
-# transformed_with_index = utils.leave_only_columns(transformed_with_index, "AAPL")
-# print(transformed_with_index)
-# #
-# show_data=Underlying_twelve_data_details.show_columns(transformed_test_file)
-
-
-# python -m src.api_providers.twelve_data.api_request_twelve_data
+  

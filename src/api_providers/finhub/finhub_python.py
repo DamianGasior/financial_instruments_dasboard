@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 import time
 from datetime import datetime
+from src.utils.streamlit_utils import key_validation
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -12,8 +13,12 @@ from pathlib import Path
 
 
 FINHUB_KEY_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
-load_dotenv(FINHUB_KEY_PATH)
-API_KEY = os.getenv("finhub_key")
+# load_dotenv(FINHUB_KEY_PATH)
+# API_KEY = os.getenv("finhub_key")
+key_name="finhub_key"
+
+
+API_KEY=key_validation(FINHUB_KEY_PATH,key_name)
 
 
 # Setup client

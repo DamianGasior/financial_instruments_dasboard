@@ -7,11 +7,16 @@ from src.api_providers.finhub import finhub_python
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from src.utils.streamlit_utils import key_validation
+
 
 
 FINHUB_TOKEN_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
-load_dotenv(FINHUB_TOKEN_PATH)
-API_KEY = os.getenv("finhub_key")
+# load_dotenv(FINHUB_TOKEN_PATH)
+# API_KEY = os.getenv("finhub_key")
+key_name = "finhub_key"
+API_KEY = key_validation(FINHUB_TOKEN_PATH, key_name)
+
 
 
 if "ws_open" not in st.session_state:

@@ -1,22 +1,27 @@
 import streamlit as st
-from src.metrics.metrics_calcs import Underlying_metrics
-from src.metrics.numpy_calcs import DataFrameStore
-from src.api_providers.common.multiple_data_frame import Dataframe_combine_builder
-from src.api_providers.finhub.finhub_python import Finhub_data_builder
+# from src.metrics.metrics_calcs import Underlying_metrics
+# from src.metrics.numpy_calcs import DataFrameStore
+# from src.api_providers.common.multiple_data_frame import Dataframe_combine_builder
+# from src.api_providers.finhub.finhub_python import Finhub_data_builder
+
+from src.metrics import metrics_calcs
+from src.metrics import numpy_calcs
+from src.api_providers.common import multiple_data_frame
+from src.api_providers.finhub import finhub_python
 
 
 def init_session_state():
     if "multi_builder" not in st.session_state:
-        st.session_state.multi_builder = Dataframe_combine_builder()
+        st.session_state.multi_builder = multiple_data_frame.Dataframe_combine_builder()
 
     if "metrics_instance" not in st.session_state:
-        st.session_state.metrics_instance = Underlying_metrics()
+        st.session_state.metrics_instance = metrics_calcs.Underlying_metrics()
 
     if "finhub_info" not in st.session_state:
-        st.session_state.finhub_info = Finhub_data_builder()
+        st.session_state.finhub_info = finhub_python.Finhub_data_builder()
 
     if "df_risk_info" not in st.session_state:
-        st.session_state.df_risk_info = DataFrameStore()
+        st.session_state.df_risk_info = numpy_calcs.DataFrameStore()
 
     if "merged_df_one" not in st.session_state:
         st.session_state.merged_df_one = None
