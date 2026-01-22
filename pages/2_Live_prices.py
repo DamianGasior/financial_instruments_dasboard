@@ -16,7 +16,6 @@ from src.api_providers.finhub.finhub_websocket import ws_connection
 from src.api_providers.finhub.finhub_websocket import finhub_python
 from streamlit_autorefresh import st_autorefresh
 
-from streamlit_card import card
 
 st_autorefresh(interval=2000)  # co 2 sekundy
 
