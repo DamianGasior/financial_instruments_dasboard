@@ -1,13 +1,11 @@
 import streamlit as st
 from src.utils import data_finhub_websocket
+
 # from src.api_providers.finhub.finhub_python import Finhub_data_builder
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-
-
-
-
+import logging
 
 
 # expand with last close
@@ -30,23 +28,21 @@ def view_market_data(title, data_requested, quotes):
             with cols[i]:
                 st.subheader(symbol_name)
                 st.write(value)
-                    # st.write("return=(value - last_close)/last_close")
+                # st.write("return=(value - last_close)/last_close")
 
-                    # ta metode rozszerzyc o last close, i stope zwrotu
-
-
+                # ta metode rozszerzyc o last close, i stope zwrotu
 
 
-@st.cache_data
+
 def key_validation(path, api_key_name):
     try:
         api_key = st.secrets[api_key_name]
+        logging.info(f"{api_key_name}:{api_key}")
         return api_key
 
     except Exception:
         load_dotenv(path)
         api_key = os.getenv(api_key_name)
-        api_key_to_str=str(api_key)
-        print(f'test_type_hasla_{api_key_name}')
-        print(type(api_key_to_str))
+        api_key_to_str = str(api_key)
+        logging.info(f"dev_environment: {api_key_name}:{api_key_to_str}")
         return api_key_to_str

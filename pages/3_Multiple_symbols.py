@@ -97,7 +97,7 @@ with tab2:
             "Search engine is available only for  a limited number of  following instruments : forex, cryptos and US listed stock and etf's"
         )
 
-        query = st.text_input("Type your symbol/name: ")
+        query = st.text_input("Type your symbol/name of the instrument you are looking for: ")
         if len(query) >= 2:
             symbols_response = (
                 api_request_twelve_data.Underlying_twelve_data_reuquest.symbol_search(
@@ -117,7 +117,7 @@ with tab2:
                 #     options=options.append(text)
 
                 selected = st.selectbox(
-                    "Choose one of your instruments from the drop down list",
+                    "Choose one of your instruments from the drop down list . Once you have the right instrument hit '+ Add symbol' ",
                     options=list(
                         symbols_response.keys()
                     ),  # you present to the user only  the keys,

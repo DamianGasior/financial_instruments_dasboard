@@ -22,7 +22,7 @@ from src.pipeline.base_api_request import BaseAPIProvider
 TWELVEDATA_KEY_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
 # load_dotenv(TWELVEDATA_KEY_PATH)
 # API_KEY = os.getenv("apikey_twelve_data")
-key_name ="apikey_twelve_data"
+key_name = "apikey_twelve_data"
 
 
 API_KEY = key_validation(TWELVEDATA_KEY_PATH, key_name)
@@ -30,6 +30,13 @@ API_KEY = key_validation(TWELVEDATA_KEY_PATH, key_name)
 # https://api.twelvedata.com/time_series?apikey=88b6ba35bcfc4bd3b70febcfe923cda6&symbol=AAPL&interval=1day&format=JSON&outputsize=100&previous_close=true&dp=4
 
 td_queue_of_requests = deque()
+
+@st.cache_data(ttl=3600)
+def api_request_cached(parameters):
+    url = "https://api.twelvedata.com/time_series?"
+    resp = requests.get(url, params=parameters)
+    resp.raise_for_status() #its a ready method from 'requests' module, where following htpp responses 400 <= resp.status_code < 600 are checked
+    return resp
 
 
 class Underlying_twelve_data_reuquest(BaseAPIProvider):
@@ -55,12 +62,12 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
     def to_dict_params(self):
         return self.__dict__
 
-    # @st.cache_data(ttl=3600)  # ttl = time-to-live w sekundach
     def api_request(self):
         parameters = self.to_dict_params()
-        url = "https://api.twelvedata.com/time_series?"
+        # url = "https://api.twelvedata.com/time_series?"
         try:
-            resp = requests.get(url, params=parameters)
+            # resp = requests.get(url, params=parameters)
+            resp=api_request_cached(parameters)
             print(type(resp))  # <class 'requests.models.Response'>
             response = resp.json()
             print(response)
@@ -115,7 +122,10 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
 
     def execute_full_request(self):
         print("request_executed_by_twelve_data")
-        response = self.api_request()
+        response = self.api_request() # blocking it to check the st.cache_Data
+        # parameters_for_req = self.to_dict_params()
+        # response = api_request(parameters_for_req)
+
         print(response)
         td_queue_of_requests.append(response)
         return response
@@ -136,7 +146,7 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
         return super().read_caches()
 
     @staticmethod
-    @st.cache_data(ttl=600)
+    @st.cache_data(ttl=900)
     def symbol_search(users_input, apikey=API_KEY):
 
         initial_list = []
@@ -183,5 +193,3 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
                 options[label] = item
 
         return options
-
-  

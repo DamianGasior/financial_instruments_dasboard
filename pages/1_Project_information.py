@@ -44,6 +44,8 @@ with tab1:
     linkedin : https://www.linkedin.com/in/damian-piotr-gasior/
 
     github : https://github.com/DamianGasior
+
+    streamlit cloud : https://financial-instruments-dasboard.streamlit.app/
 """
     )
 
