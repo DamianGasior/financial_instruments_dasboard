@@ -88,10 +88,10 @@ with tab2:
             submitted = st.form_submit_button("➕ Add symbol")
             new_item_upper = new_item.upper()
         if submitted and new_item_upper:
-            if new_item_upper in st.session_state.my_list:
+            if new_item_upper in st.session_state.symbols_for_my_list:
                 pass
             else:
-                st.session_state.my_list.append(new_item_upper)
+                st.session_state.symbols_for_my_list.append(new_item_upper)
     elif st.session_state.selected_broker == "Twelve data":
         st.info(
             "Search engine is available only for  a limited number of  following instruments : forex, cryptos and US listed stock and etf's"
@@ -152,8 +152,17 @@ with tab2:
                     key="my_list",  # key links this widdget under a specifc key in memorey, key allows to idenfitfy the widget
                     # when a symbol is chosen, then it stays in the default after each script rerun
                 )
+ 
 
-                # https://chatgpt.com/c/696410bb-d2ac-8333-ba05-e9d79e612d0a
+    if st.session_state.selected_broker == "Alpha vantage":
+        st.info("Once you finish to look for all your symbols, choose the one below for which you want to request data")
+        st.multiselect(
+            "Select symbols for which you want request data:",
+            options=st.session_state.symbols_for_my_list,
+            key="my_list",  # key links this widdget under a specifc key in memorey, key allows to idenfitfy the widget
+            # when a symbol is chosen, then it stays in the default after each script rerun
+        )
+
 
     price_type = st.radio(
         "Select price interval:", ["daily", "weekly", "monthly"], index=0

@@ -60,7 +60,7 @@ def main():
                     print("test twelve data")
                     pass
 
-                elif st.session_state.selected_broker == "Alpha vantage_test":
+                elif st.session_state.selected_broker == "Alpha vantage":
                     print(symbol_deque)
                     symbol = symbol_deque.popleft()
                     print(symbol)

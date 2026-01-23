@@ -44,5 +44,5 @@ def key_validation(path, api_key_name):
         load_dotenv(path)
         api_key = os.getenv(api_key_name)
         api_key_to_str = str(api_key)
-        logging.info(f"dev_environment: {api_key_name}:{api_key_to_str}")
+        logging.info(f"dev_environment: {api_key_name}:{api_key_to_str}") # for dev purpose
         return api_key_to_str
