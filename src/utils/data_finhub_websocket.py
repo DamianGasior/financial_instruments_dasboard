@@ -17,7 +17,7 @@ symbols_req_indices = ["^GSPC", "^DJI", "^NDX", "^N100", "^GDAXI", "^FTSE"]
 # real data / qutoes from exchanges are very expensive ( what requires hihg fees to exchanges ) so websocket
 # isntead of providing quotes for indices does provides quotes for CFD's which are very close to the quotes from exchanges
 # for S&P , NASDAQ and so on, Finhub would need to have a paid license
-# https://chatgpt.com/c/69287cc3-451c-832a-8393-188c97f83f19
+
 
 # symbols below will be used as input request used to websocket
 # source : https://finnhub.io/api/v1/forex/symbol?exchange=oanda&token=d4ee4ppr01qrumpf24fgd4ee4ppr01qrumpf24g0

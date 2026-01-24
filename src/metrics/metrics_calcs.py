@@ -190,7 +190,7 @@ class Underlying_metrics:
             self.dict_of_dict["single_timeframe_returns"].keys(),
         )
 
-    # zrboic analize tego : https://chatgpt.com/c/693dccf9-7630-832c-94f1-182b52fd5ffa
+
 
     @staticmethod
     def calc_correlation(concac_df):

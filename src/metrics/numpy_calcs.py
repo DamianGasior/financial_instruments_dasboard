@@ -274,7 +274,6 @@ class DataFrameStore:
         # dostaje daily returns i licze ich mean
         # dostaje standardowe odchylenie zwrotu i licze
 
-        # cos nie dziala jak alezy,sprawdz czat https://chatgpt.com/c/6952fa88-ad74-8328-b2e8-3bf4d9b7174e
 
     # method which  will serve as a pipeline
     def beta_and_volatility_metrics(

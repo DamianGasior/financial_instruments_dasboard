@@ -224,14 +224,7 @@ class Dataframe_combine_builder:
 
         return concac_lists, message
 
-    #  przekazuje liste z kursami jaki df do correlation_helper gdzie bede potem  werfyikowal
-    # uniqe index, potem robie concacente do jednego df, a potem daje jede zloaczaony DF do
-    # metrics_calcs.Underlying_metrics.calc_correlation
-
-    #   correlation_helper przerzucic do multiple symbols, a to moze byc w df, choc mialo by sens to liczcy w numpy , sprawdzic czy sie da i jak.  << moze byc w df 
-    # jak to bedzie zrobiione to reszta juz bajka bo R2, to jest kwadrat correlation.
-    # definicje i co to jest r2 - tutaj : https://chatgpt.com/g/g-p-68e6c9e29bbc8191b9938d8dd6d712f6-mvp/c/695d9385-42ec-832b-b8df-6bf63ea1e3c8
-
+    
     @staticmethod
     def combined_lists(symbols_from_user, benchmarks):
         # my_merged_list=[]
