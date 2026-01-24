@@ -16,4 +16,4 @@ components.html("""
 
 
 st.title("Financial Dashboard")
-st.write("Welcome, go the the tabs on the left, start from the top left👈")
+st.write("Welcome, please start from the tab **Project infromation** available on the left sidebar👈")
