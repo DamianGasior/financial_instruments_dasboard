@@ -21,9 +21,11 @@
    
 
 
-   ## Main Functionalities
-
-  ### Live Market Data
+  # Main Functionalities
+  
+  
+  ### Live prices
+  **Navigation:** Sidebar → Live prices
    
   - Live prices via **Finnhub WebSocket** for selected groups of instruments:
   - indices
@@ -32,10 +34,11 @@
   - bond yields
   - cryptocurrencies
     
-
+ 
   ### Instrument Search
+  **Navigation:** Sidebar → Multiple symbols
     
-  - Instrument search using a default data provider (**Twelve Data**)
+  - Instrument search using the default data provider (**Twelve Data**)
   - Available instruments:
   - US-listed stocks
   - ETFs
@@ -67,9 +70,11 @@
     
   - Calculate and display correlations between selected symbols and/or benchmarks
     
-
+  
   ### Risk & Performance Metrics
-   
+  **Navigation:** Sidebar → Benchmark metrics  
+
+  Benchmarks are represented by ETFs tracking major market indices.
   For selected symbols evaluated against multiple benchmarks (e.g. **SPY, QQQ, GLD, EEM**):
   - beta
   - volatility (standard deviation)
@@ -80,6 +85,10 @@
   - Symbols and benchmarks are visualized on comparative charts, enabling quick assessment of relative performance and market positioning.
 
 
+  ## Feedback to the author
+  **Navigation:** Sidebar → Feedback  
+
+  A simple feedback form allowing users to select a category and send a free-form message to the author (optional)
     
   # Project Structure
     ```    
@@ -114,7 +123,6 @@
     
 
   # Project Characteristics & Disclaimer
-
     
   This project is created **purely for educational purposes** and must not be treated as financial advice.
     

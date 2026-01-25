@@ -15,5 +15,44 @@ components.html("""
 
 
 
-st.title("Financial Dashboard")
-st.write("Welcome, please start from the tab **Project infromation** available on the left sidebar👈")
+
+st.markdown("""
+# 📊 Financial Dashboard
+
+Welcome! This page provides an overview of the available modules in the application.
+
+---
+
+## 🧭 Project Information
+Contains general information about the project:
+- **About the author**
+- **Project README** and usage instructions
+- **BPMN diagram** presenting the system architecture
+
+---
+
+## 📈 Live Prices
+Real-time market prices provided by **OANDA**, representing CFD instruments across selected asset classes.
+
+---
+
+## 🔍 Multiple Symbols
+Allows users to:
+- Choose a **data provider / broker**
+- Search and analyze multiple financial instruments  
+Detailed usage is described in the **README** section.
+
+---
+
+## 📊 Benchmark Metrics
+Enables calculation of financial metrics for user-selected symbols compared against:
+- Market benchmarks, represented by ETFs referencing major market indices.  
+Detailed usage is described in the **README** section.
+
+---
+
+## 📝 Feedback
+A simple feedback form allowing users to:
+- Select a category
+- Send a free-form message to the author (optional)
+""")
