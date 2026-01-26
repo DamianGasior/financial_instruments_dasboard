@@ -6,6 +6,8 @@
   For cryptocurrencies and FX pairs, the search scope is not limited to US markets.
 
   The tool provides basic descriptive information for selected instruments (such as description and classification) and enables users to analyze historical prices, correlations, and key financial metrics commonly used by professional investors.
+
+  🚀 Live application: Explore the dashboard on Streamlit Cloud: https://financial-instruments-dasboard.streamlit.app/
     
 
 
