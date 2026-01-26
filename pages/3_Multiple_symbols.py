@@ -29,8 +29,10 @@ from src.api_providers.twelve_data import api_request_twelve_data
 # from src.utils.streamlit_utils import correlation_helper
 import altair as alt
 from src.session_init import init_session_state
+from src.utils import streamlit_utils
 
-# Dodaj folder główny projektu do sys.path
+
+# Add folder to the main project do sys.path
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
     sys.path.append(PROJECT_ROOT)
@@ -79,157 +81,194 @@ with tab1:
         "Once you selected the data  provider, go to the next tab : 'Enter symbol'"
     )
 
-with tab2:
-    if st.session_state.selected_broker == "Alpha vantage":
-        with st.form("add_item_form", clear_on_submit=True):
-            new_item = st.text_input("Enter a specfic stock symbol")
-            # if st.session_state.selected_broker =="Twelve data":
-            #     # users_input=api_request_twelve_data.Underlying_twelve_data_reuquest.symbol_search(new_item)
-            submitted = st.form_submit_button("➕ Add symbol")
-            new_item_upper = new_item.upper()
-        if submitted and new_item_upper:
-            if new_item_upper in st.session_state.symbols_for_my_list:
-                pass
-            else:
-                st.session_state.symbols_for_my_list.append(new_item_upper)
-    elif st.session_state.selected_broker == "Twelve data":
-        st.info(
-            "Search engine is available only for  a limited number of  following instruments : forex, cryptos and US listed stock and etf's"
-        )
 
-        query = st.text_input("Type your symbol/name of the instrument you are looking for: ")
-        if len(query) >= 2:
-            symbols_response = (
-                api_request_twelve_data.Underlying_twelve_data_reuquest.symbol_search(
-                    query
-                )
+with tab2:
+    if not st.session_state.submit_button:
+        if st.session_state.selected_broker == "Alpha vantage":
+            with st.form("add_item_form", clear_on_submit=True):
+                new_item = st.text_input("Enter a specfic stock symbol")
+                # if st.session_state.selected_broker =="Twelve data":
+                #     # users_input=api_request_twelve_data.Underlying_twelve_data_reuquest.symbol_search(new_item)
+                submitted = st.form_submit_button("➕ Add symbol")
+                new_item_upper = new_item.upper()
+            if submitted and new_item_upper:
+                if new_item_upper in st.session_state.symbols_for_my_list:
+                    pass
+                else:
+                    st.session_state.symbols_for_my_list.append(new_item_upper)
+        elif st.session_state.selected_broker == "Twelve data":
+            st.info(
+                "Search engine is available only for  a limited number of  following instruments : forex, cryptos and US listed stock and etf's"
             )
 
-            if not symbols_response:
-                st.warning(
-                    f'No reposne with your input: "{query}". Try another combination with your input plus something else'
+            query = st.text_input(
+                "Type your symbol/name of the instrument you are looking for: "
+            )
+            if len(query) >= 2:
+                symbols_response = api_request_twelve_data.Underlying_twelve_data_reuquest.symbol_search(
+                    query
                 )
+
+                if not symbols_response:
+                    st.warning(
+                        f'No reposne with your input: "{query}". Try another combination with your input plus something else'
+                    )
+                    st.stop()
+                elif symbols_response:
+                    # options=[]
+                    # for item in symbols_response:
+                    #     text=f'symbol : {item['symbol']}, instrument_name: {item['instrument_name']},exchange : {item['exchange']}'
+                    #     options=options.append(text)
+
+                    selected = st.selectbox(
+                        "Choose one of your instruments from the drop down list . Once you have the right instrument hit '+ Add symbol' ",
+                        options=list(
+                            symbols_response.keys()
+                        ),  # you present to the user only  the keys,
+                        key="select_symbols",
+                    )
+
+                    if st.button("➕ Add symbol"):
+
+                        # selected=list(selected.keys())
+                        # selected=selected[0]
+                        # print(type(selected))
+                        # print(selected)
+                        value = symbols_response[selected]
+                        symbol_ric = value.get("symbol")
+                        if symbol_ric not in st.session_state.symbols_for_my_list:
+                            st.session_state.symbols_for_my_list.append(symbol_ric)
+
+                    # st.session_state.working_list=st.session_state.symbols_for_my_list
+
+                    # new_list = []
+                    # for s in st.session_state.my_list:
+                    #     if s in st.session_state.symbols_for_my_list:
+                    #         new_list.append(s)
+
+                    # st.session_state.my_list = new_list
+                    st.info(
+                        "Once you finish to look for all your symbols, choose the one below for which you want to request data"
+                    )
+                    st.multiselect(
+                        "Select symbols for which you want request data:",
+                        options=st.session_state.symbols_for_my_list,
+                        key="my_list",  # key links this widdget under a specifc key in memorey, key allows to idenfitfy the widget
+                        # when a symbol is chosen, then it stays in the default after each script rerun
+                    )
+
+        if st.session_state.selected_broker == "Alpha vantage":
+            st.info(
+                "Once you finish to look for all your symbols, choose the one below for which you want to request data"
+            )
+            st.multiselect(
+                "Select symbols for which you want request data:",
+                options=st.session_state.symbols_for_my_list,
+                key="my_list",  # key links this widdget under a specifc key in memorey, key allows to idenfitfy the widget
+                # when a symbol is chosen, then it stays in the default after each script rerun
+            )
+
+        price_type = st.radio(
+            "Select price interval:", ["daily", "weekly", "monthly"], index=0
+        )
+
+        st.session_state.users_price_type = price_type
+
+        price_adjustment = st.radio(
+            "Select price type:", ["adjusted", "non-adjusted"], index=0
+        )
+
+        # to change the value from defaulf , if the use  will choose  "adjusted"
+        st.session_state.price_adjustment = price_adjustment
+
+        if st.session_state.selected_broker == "Alpha vantage":
+
+            if price_adjustment == "non-adjusted":
+                if price_type == "daily":
+                    st.session_state.price_type = "TIME_SERIES_DAILY"
+                elif price_type == "weekly":
+                    st.session_state.price_type = "TIME_SERIES_WEEKLY"
+                elif price_type == "monthly":
+                    st.session_state.price_type = "TIME_SERIES_MONTHLY"
+            elif price_adjustment == "adjusted":
+                if price_type == "daily":
+                    st.session_state.price_type = "TIME_SERIES_DAILY_ADJUSTED"
+                elif price_type == "weekly":
+                    st.session_state.price_type = "TIME_SERIES_WEEKLY_ADJUSTED"
+                elif price_type == "monthly":
+                    st.session_state.price_type = "TIME_SERIES_MONTHLY_ADJUSTED"
+
+        elif st.session_state.selected_broker == "Twelve data":
+            if price_adjustment == "non-adjusted":
+                st.session_state.price_type = "none"
+            elif price_adjustment == "adjusted":
+                st.session_state.price_type = "all"
+
+            if price_type == "daily":
+                st.session_state.price_type = "1day"
+            elif price_type == "weekly":
+                st.session_state.price_type = "1week"
+            elif price_type == "monthly":
+                st.session_state.price_type = "1month"
+
+        st.markdown("Once you are completed , please  hit **Submit button**")
+
+        st.session_state.my_list_info_for_user = st.session_state.my_list.copy()
+
+        if st.button("Submit"):
+            st.session_state.submit_button = True
+            st.session_state.my_merged_list = Dataframe_combine_builder.combined_lists(
+                st.session_state.my_list, st.session_state.my_benchmarks
+            )
+            try:
+                main()
+
+            except Exception as e:
+                logging.exception("App crashed")  # traceback for terminal
+                st.error(f"API error: {e}")  # only this will be viisble in UI
                 st.stop()
-            elif symbols_response:
-                # options=[]
-                # for item in symbols_response:
-                #     text=f'symbol : {item['symbol']}, instrument_name: {item['instrument_name']},exchange : {item['exchange']}'
-                #     options=options.append(text)
 
-                selected = st.selectbox(
-                    "Choose one of your instruments from the drop down list . Once you have the right instrument hit '+ Add symbol' ",
-                    options=list(
-                        symbols_response.keys()
-                    ),  # you present to the user only  the keys,
-                    key="select_symbols",
-                )
+    if st.session_state.submit_button and len(st.session_state.symbol_deque) == 0:
+        count = 0
+        if not st.session_state.autorefresh and count == 0:
+            st_autorefresh(interval=300, key="polling")
+            count += 1
+            st.session_state.autorefresh = True
+  
 
-                if st.button("➕ Add symbol"):
+        
 
-                    # selected=list(selected.keys())
-                    # selected=selected[0]
-                    # print(type(selected))
-                    # print(selected)
-                    value = symbols_response[selected]
-                    symbol_ric = value.get("symbol")
-                    if symbol_ric not in st.session_state.symbols_for_my_list:
-                        st.session_state.symbols_for_my_list.append(symbol_ric)
+        st.write('You have requested data for the following symbols:')
+        streamlit_utils.run_list_view(st.session_state.my_list_info_for_user)
+            
+        st.write('Benchmark symbols used for comparison:')
+        streamlit_utils.run_list_view(st.session_state.my_benchmarks)
 
-                # st.session_state.working_list=st.session_state.symbols_for_my_list
+        st.info('👈 To continue your analysis, go to the **Symbol selection** is available in the sidebar')
 
-                # new_list = []
-                # for s in st.session_state.my_list:
-                #     if s in st.session_state.symbols_for_my_list:
-                #         new_list.append(s)
-
-                # st.session_state.my_list = new_list
-                st.info(
-                    "Once you finish to look for all your symbols, choose the one below for which you want to request data"
-                )
-                st.multiselect(
-                    "Select symbols for which you want request data:",
-                    options=st.session_state.symbols_for_my_list,
-                    key="my_list",  # key links this widdget under a specifc key in memorey, key allows to idenfitfy the widget
-                    # when a symbol is chosen, then it stays in the default after each script rerun
-                )
- 
-
-    if st.session_state.selected_broker == "Alpha vantage":
-        st.info("Once you finish to look for all your symbols, choose the one below for which you want to request data")
-        st.multiselect(
-            "Select symbols for which you want request data:",
-            options=st.session_state.symbols_for_my_list,
-            key="my_list",  # key links this widdget under a specifc key in memorey, key allows to idenfitfy the widget
-            # when a symbol is chosen, then it stays in the default after each script rerun
-        )
-
-
-    price_type = st.radio(
-        "Select price interval:", ["daily", "weekly", "monthly"], index=0
-    )
-
-    st.session_state.users_price_type = price_type
-
-    price_adjustment = st.radio(
-        "Select price type:", ["adjusted", "non-adjusted"], index=0
-    )
-
-    # to change the value from defaulf , if the use  will choose  "adjusted"
-    st.session_state.price_adjustment = price_adjustment
-
-    if st.session_state.selected_broker == "Alpha vantage":
-
-        if price_adjustment == "non-adjusted":
-            if price_type == "daily":
-                st.session_state.price_type = "TIME_SERIES_DAILY"
-            elif price_type == "weekly":
-                st.session_state.price_type = "TIME_SERIES_WEEKLY"
-            elif price_type == "monthly":
-                st.session_state.price_type = "TIME_SERIES_MONTHLY"
-        elif price_adjustment == "adjusted":
-            if price_type == "daily":
-                st.session_state.price_type = "TIME_SERIES_DAILY_ADJUSTED"
-            elif price_type == "weekly":
-                st.session_state.price_type = "TIME_SERIES_WEEKLY_ADJUSTED"
-            elif price_type == "monthly":
-                st.session_state.price_type = "TIME_SERIES_MONTHLY_ADJUSTED"
-
-    elif st.session_state.selected_broker == "Twelve data":
-        if price_adjustment == "non-adjusted":
-            st.session_state.price_type = "none"
-        elif price_adjustment == "adjusted":
-            st.session_state.price_type = "all"
-
-        if price_type == "daily":
-            st.session_state.price_type = "1day"
-        elif price_type == "weekly":
-            st.session_state.price_type = "1week"
-        elif price_type == "monthly":
-            st.session_state.price_type = "1month"
-
-    st.markdown("Once you are completed , please  hit **Submit button**")
-
+        st.info('Symbol selection is now locked for this request. '
+                'To analyze other symbols, reset the current selection.')
     
-    
-    if st.button("Submit"):
-        st.session_state.submit_button = True
-        st.session_state.my_merged_list = Dataframe_combine_builder.combined_lists(
-            st.session_state.my_list, st.session_state.my_benchmarks
-        )
-        try:
-            main()
+        if st.button("Request other symbols"):
+            st.session_state.submit_button = False
+            st.session_state.autorefresh = False
+            st.session_state.success_symbols.clear()
+            print(st.session_state.symbol_deque)
+            if not st.session_state.autorefresh and count == 0:
+                st_autorefresh(interval=100, key="polling")
+                count += 1
+        
+        with st.expander("Data request confirmation"):
+            for item in st.session_state.success_symbols:
+                st.success(item)
 
-        except Exception as e:
-            logging.exception("App crashed")  # traceback for terminal
-            st.error(f"API error: {e}")  # only this will be viisble in UI
-            st.stop()
 
 if st.session_state.submit_button:
     with tab3:
         # with st.sidebar:
-            # st.title("Symbols")
-            # for symbol in st.session_state.my_list:
-            #     st.markdown(f"- {symbol}")
+        # st.title("Symbols")
+        # for symbol in st.session_state.my_list:
+        #     st.markdown(f"- {symbol}")
 
         if st.session_state.submit_button:  # checking if submit button is True
             with st.sidebar:
@@ -239,9 +278,11 @@ if st.session_state.submit_button:
                     # key="symbols_multiselect", # after I came back from Bencmhar metrics tab , all the requested symbols do dissapear from my tab,
                     key="ui_selected_symbols",
                 )
-                
+
         if st.session_state.selected_symbols != st.session_state.ui_selected_symbols:
-            st.session_state.selected_symbols = st.session_state.ui_selected_symbols.copy()
+            st.session_state.selected_symbols = (
+                st.session_state.ui_selected_symbols.copy()
+            )
 
         if (
             st.session_state.selected_broker == "Alpha vantage"
@@ -327,68 +368,6 @@ if st.session_state.submit_button:
             st.write("Still under development. Plesae be patient..")
             pass
 
-        # below to be repalced in the future
-        # --- przykładowe dane ---
-        # przykładowe dane
-        # df = pd.DataFrame({
-        #     "Date": pd.date_range(start="2025-01-01", periods=7),
-        #     "Series_A": [100, 105, 102, 110, 115, 120, 125],
-        #     "Series_B": [200, 195, 198, 205, 210, 220, 230]
-        # })
-
-        # # przelicz na procenty względem pierwszej wartości
-        # df_relative = df.copy()
-        # for col in ["Series_A", "Series_B"]:
-        #     df_relative[col] = df[col] / df[col].iloc[0] * 100
-
-        # df_melted = df_relative.melt(id_vars="Date", var_name="Series", value_name="Value")
-
-        # # --- wykres Altair z dokładnym zakresem dat ---
-        # chart = alt.Chart(df_melted).mark_line(point=True).encode(
-        #     x=alt.X('Date:T', scale=alt.Scale(domain=[df["Date"].min(), df["Date"].max()])),
-        #     y='Value:Q',
-        #     color='Series:N',
-        #     tooltip=['Date:T', 'Series:N', 'Value:Q']
-        # ).properties(
-        #     title="Relative Comparison (%)",
-        #     width=700,
-        #     height=400
-        # ).interactive()
-
-        # st.altair_chart(chart, use_container_width=True)
-        # ✅ Co robi powyższy fragment:
-    # # tradingview_html = f"""
-    # <!-- TradingView Widget BEGIN -->
-    # <div class="tradingview-widget-container">
-    # <div id="tradingview_chart"></div>
-    # <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    # <script type="text/javascript">
-    # new TradingView.widget({{
-    #     "width": "100%",
-    #     "height": 600,
-    #     "symbol": "{df_single_price}",
-    #     "interval": "D",
-    #     "timezone": "Europe/Warsaw",
-    #     "theme": "light",
-    #     "style": "1",
-    #     "locale": "pl",
-    #     "toolbar_bg": "#f1f3f6",
-    #     "enable_publishing": false,
-    #     "withdateranges": true,
-    #     "hide_side_toolbar": false,
-    #     "allow_symbol_change": true,
-    #     "container_id": "tradingview_chart"
-    # }});
-    # </script>
-    # </div>
-    # <!-- TradingView Widget END -->
-    # """
-
-    # st.components.v1.html(tradingview_html, height=600)
-
-    # elif df_single_price is None:
-    #     print("Missing data")
-
     with tab5:
         if (
             st.session_state.selected_broker == "Alpha vantage"
@@ -468,7 +447,7 @@ if st.session_state.submit_button:
                             return_min = calc_array.min_calc(return_min) * 100
                             # st.write(f"Min : {price_min}")
                             st.metric(
-                                label=f"Min {price_type} return",
+                                label=f"Min {st.session_state.users_price_type} return",
                                 value=f"{return_min:.4f} %",
                             )
 
@@ -476,7 +455,7 @@ if st.session_state.submit_button:
                             return_max = calc_array.max_calc(return_max) * 100
                             # st.write(f"Min : {price_min}")
                             st.metric(
-                                label=f"Max {price_type} return",
+                                label=f"Max {st.session_state.users_price_type} return",
                                 value=f"{return_max:.4f} %",
                             )
 
@@ -489,7 +468,7 @@ if st.session_state.submit_button:
                             )
                             # st.write(f"Mean daily return(%): {mean_daily_return}")
                             st.metric(
-                                label=f"Mean {price_type} return",
+                                label=f"Mean {st.session_state.users_price_type} return",
                                 value=f"{mean_daily_return * 100:.4f} %",
                             )
 
@@ -498,14 +477,14 @@ if st.session_state.submit_button:
                             )
                             # st.write(f"Mean daily return(%): {mean_daily_return}")
                             st.metric(
-                                label=f"Median {price_type} return",
+                                label=f"Median {st.session_state.users_price_type} return",
                                 value=f"{median_daily_return * 100:.4f} %",
                             )
 
                             return_st_dev = calc_array.st_dev_calc(price_array[:, i])
                             return_st_dev = return_st_dev * 100
                             st.metric(
-                                label=f"{price_type.capitalize()} standard deviation",
+                                label=f"{st.session_state.users_price_type.capitalize()} standard deviation",
                                 value=f"{return_st_dev:.4f} %",
                             )
 

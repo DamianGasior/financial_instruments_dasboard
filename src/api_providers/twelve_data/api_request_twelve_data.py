@@ -85,18 +85,23 @@ class Underlying_twelve_data_reuquest(BaseAPIProvider):
                         f"Request was executed succefully for symbol: {self.symbol}"
                     )
                     symbol_received = response["meta"]["symbol"]
+                    # st.session_state.success_symbols
                     if symbol_received in st.session_state.my_benchmarks:
                         st.success(
                             # f"""Data received for symbol: {response["meta"]["symbol"]}"""
                             f"""Data received for bechmark symbol: {symbol_received}"""
                         )
+                        success_benchmark=f"Data received for bechmark symbol: {symbol_received}"
+                        st.session_state.success_symbols.append(success_benchmark)
                     else:
                         st.success(
                             # f"""Data received for symbol: {response["meta"]["symbol"]}"""
                             f"""Data received for symbol: {symbol_received}"""
                         )
-
+                        success_symbol=f"Data received for symbol: {symbol_received}"
+                        st.session_state.success_symbols.append(success_symbol)
                     return response
+                
                 # in case API will come back with an error
                 elif "code" in response.keys():
                     logging.info(f"Response type is : {code}. Response is {message}")
