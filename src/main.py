@@ -34,7 +34,7 @@ def main():
         symbol_deque = deque(st.session_state.my_merged_list)
         #    symbol_deque=deque(['PHYS', 'AEM','GDX','FNV'])
         print("symbol_deque", symbol_deque)
-
+        st.session_state.symbol_deque = symbol_deque
         if len(symbol_deque) == 0:
             raise ValueError("Missing Underlyin code")
         else:

@@ -81,5 +81,4 @@ class Finhub_data_builder:
     @staticmethod
     def read_dict(passed_dict):
         for key, value in passed_dict.items():
-            print("jestem tu")
             print(f"{key} : {value}")

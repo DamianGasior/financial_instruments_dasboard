@@ -33,7 +33,6 @@ def view_market_data(title, data_requested, quotes):
                 # ta metode rozszerzyc o last close, i stope zwrotu
 
 
-
 def key_validation(path, api_key_name):
     try:
         api_key = st.secrets[api_key_name]
@@ -44,5 +43,17 @@ def key_validation(path, api_key_name):
         load_dotenv(path)
         api_key = os.getenv(api_key_name)
         api_key_to_str = str(api_key)
-        logging.info(f"dev_environment: {api_key_name}:{api_key_to_str}") # for dev purpose
+        logging.info(
+            f"dev_environment: {api_key_name}:{api_key_to_str}"
+        )  # for dev purpose
         return api_key_to_str
+
+
+def run_list_view(my_list):
+    for x in my_list:
+        st.write(f'- {x}')
+
+
+def run_list_info(my_list):
+    for x in my_list:
+        st.info(x)

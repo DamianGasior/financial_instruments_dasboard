@@ -62,6 +62,9 @@ def init_session_state():
 
     if "my_list" not in st.session_state:
         st.session_state.my_list = []
+   
+    if "my_list_info_for_user" not in st.session_state:
+        st.session_state.my_list_info_for_user = None
 
     if "final_list" not in st.session_state:
         st.session_state.final_list = []
@@ -71,6 +74,15 @@ def init_session_state():
 
     if "users_price_type" not in st.session_state:
         st.session_state.users_price_type = None
+    
+    if "success_symbols" not in st.session_state:
+        st.session_state.success_symbols = []
+
+    if "symbol_deque" not in st.session_state:
+        st.session_state.symbol_deque = None
+    
+    if "autorefresh" not in st.session_state:
+        st.session_state.autorefresh = False
 
     if "price_type" not in st.session_state:
         st.session_state.price_type = "TIME_SERIES_DAILY"
