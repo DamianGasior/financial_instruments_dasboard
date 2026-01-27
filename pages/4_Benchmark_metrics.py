@@ -41,24 +41,24 @@ init_session_state()
 # from src.utils.streamalit_utlis import streamalit_utlis
 
 # tab0,tab1,tab2,tab3
-tab0, tab1 = st.tabs(
+tab0, tab1, tab3 = st.tabs(
     [
         "SPY",
         "QQQ",
-        # "EEM",
-        # "GLD",
+        # "EEM", # moved out at the moment, if required, you need to expand the tab above with tab2
+        "GLD",
     ]
 )
 
 
 symbol_0 = "SPY"
 symbol_1 = "QQQ"
-symbol_2 = "EEM"
+# symbol_2 = "EEM"
 symbol_3 = "GLD"
 
 symbol_df_builder = multiple_data_frame.Dataframe_combine_builder()
-# list_of_benchmarks = [symbol_0, symbol_1, symbol_2, symbol_3]
-list_of_benchmarks = [symbol_0, symbol_1]
+list_of_benchmarks = [symbol_0, symbol_1, symbol_3]
+# list_of_benchmarks = [symbol_0, symbol_1]
 
 # with tab0:
 
@@ -161,16 +161,16 @@ if beta_volatility is True:
     #     st.dataframe(st.session_state.df_risk_info.df)
     #     numpy_calcs.DataFrameStore.beta_definition()
 
-    # with tab3:
-    #     st.session_state.df_risk_info.beta_and_volatility_metrics(
-    #         st.session_state.selected_symbols,
-    #         symbol_3,
-    #         single_stock_prices,
-    #         list_of_benchmarks,
-    #         st.session_state.users_price_type
-    #     )
-    #     st.session_state.df_risk_info.show()
-    #     plotly_df = st.session_state.df_risk_info.to_df()
-    #     numpy_calcs.DataFrameStore.plotly_chart_beta_volatility(plotly_df, symbol_3)
-    #     st.dataframe(st.session_state.df_risk_info.df)
-    #     numpy_calcs.DataFrameStore.beta_definition()
+    with tab3:
+        st.session_state.df_risk_info.beta_and_volatility_metrics(
+            st.session_state.selected_symbols,
+            symbol_3,
+            single_stock_prices,
+            list_of_benchmarks,
+            st.session_state.users_price_type
+        )
+        st.session_state.df_risk_info.show()
+        plotly_df = st.session_state.df_risk_info.to_df()
+        numpy_calcs.DataFrameStore.plotly_chart_beta_volatility(plotly_df, symbol_3)
+        st.dataframe(st.session_state.df_risk_info.df)
+        numpy_calcs.DataFrameStore.beta_definition()

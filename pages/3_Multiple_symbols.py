@@ -57,9 +57,7 @@ init_session_state()
 # st.write("PAGE:", __file__)  # this is for debugging purpose for dev work, shows the state of  all st.states
 # st.write(st.session_state)   # this is for debugging purpose for dev work , shows the state of  all st.states
 
-# st.session_state.my_benchmarks = ["SPY", "QQQ", "EEM", "GLD"]
-
-st.session_state.my_benchmarks = ["SPY", "QQQ"]
+st.session_state.my_benchmarks = ["SPY", "QQQ", "GLD"]
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
     [
@@ -234,21 +232,26 @@ with tab2:
             st_autorefresh(interval=300, key="polling")
             count += 1
             st.session_state.autorefresh = True
-  
 
-        
+        st.write(
+            f"Your selected price interval is : {st.session_state.users_price_type}, price type is : {st.session_state.price_adjustment}"
+        )
 
-        st.write('You have requested data for the following symbols:')
+        st.write("You have requested data for the following symbols:")
         streamlit_utils.run_list_view(st.session_state.my_list_info_for_user)
-            
-        st.write('Benchmark symbols used for comparison:')
+
+        st.write("Benchmark symbols used for comparison:")
         streamlit_utils.run_list_view(st.session_state.my_benchmarks)
 
-        st.info('👈 To continue your analysis, go to the **Symbol selection** is available in the sidebar')
+        st.info(
+            "👈 To continue your analysis, go to the **Symbol selection** is available in the sidebar"
+        )
 
-        st.info('Symbol selection is now locked for this request. '
-                'To analyze other symbols, reset the current selection.')
-    
+        st.info(
+            "Symbol selection is now locked for this request. "
+            "To analyze other symbols, reset the current selection."
+        )
+
         if st.button("Request other symbols"):
             st.session_state.submit_button = False
             st.session_state.autorefresh = False
@@ -257,7 +260,7 @@ with tab2:
             if not st.session_state.autorefresh and count == 0:
                 st_autorefresh(interval=100, key="polling")
                 count += 1
-        
+
         with st.expander("Data request confirmation"):
             for item in st.session_state.success_symbols:
                 st.success(item)
@@ -519,6 +522,27 @@ if st.session_state.submit_button:
                     )
                     st.markdown("Calculated correlation is:")
                     st.dataframe(correlation_builder, width="stretch")
+                    with st.expander("Pearson Correlation (r) definition, click to expand"):
+                        st.write(
+                            """
+                    What does it measure?
+                    How strongly and linearly two instruments move together.
+                    Range: from –1 to +1.
+
+                    +1 → they move in the same direction, perfectly
+
+                    0 → no linear relationship
+
+                    –1 → they move in opposite directions
+
+                    Most important: Correlation tells you only about the direction and consistency of movement, but not how many units something increases or decreases.
+
+                    Example:
+                    If the S&P 500 goes up by 1% → Apple often also goes up by around 1%
+                    → high correlation (e.g., 0.9)
+                    But we still don’t know whether Apple increases more or less.
+            """
+                        )
 
     # with tab4:
 
