@@ -77,7 +77,7 @@
   **Navigation:** Sidebar → Benchmark metrics  
 
   Benchmarks are represented by ETFs tracking major market indices.
-  For selected symbols evaluated against multiple benchmarks (e.g. **SPY, QQQ, GLD, EEM**):
+  For selected symbols evaluated against multiple benchmarks (e.g. **SPY, QQQ, GLD**):
   - beta
   - volatility (standard deviation)
   - Sharpe ratio
@@ -96,8 +96,7 @@
     ```    
     financial_instruments_dashboard/
     │
-    ├─ app/ # Streamlit application (UI)
-    │ └─ pages/ # Dashboard views
+    ├─ pages/ # Streamlit application (UI)
     │
     ├─ src/ # Application logic
     │ ├─ api_providers/ # Market data API integrations
@@ -108,6 +107,7 @@
     │
     ├─ diagrams/ # Diagrams (BPMN, SVG)
     ├─ requirements.txt # Python dependencies
+    ├─ streamlit_app.py # starting page ( required by streamlit)
     ├─ README.md
     └─ LICENSE
     ```    
@@ -119,9 +119,8 @@
 
   # How to Use
    
-  A short demo video (approximately 3 minutes) demonstrating the main functionalities of the application will be provided here, link tbd.
+  A short demo video (approximately 90 seconds) available on the starting page : streamlit_app in the *Project infromation* section
   
-  For now, please go direclty to : https://financial-instruments-dasboard.streamlit.app/ 
     
 
   # Project Characteristics & Disclaimer

@@ -1,0 +1,79 @@
+1
+00:00:00,900 --> 00:00:04,440
+This application allows quick analysis of financial market
+
+2
+00:00:04,440 --> 00:00:08,500
+data, ethics, cryptos, US listed ETS and stocks
+
+3
+00:00:08,500 --> 00:00:09,680
+in one dashboard.
+
+4
+00:00:12,160 --> 00:00:15,100
+I can select multiple instruments and request historical
+
+5
+00:00:15,100 --> 00:00:17,100
+price data in a single step.
+
+6
+00:00:19,440 --> 00:00:22,680
+The app automatically fetches and validates the data.
+
+7
+00:00:27,760 --> 00:00:32,660
+Here I can see historical prices, charts, and
+
+8
+00:00:32,660 --> 00:00:34,900
+correlation between all selected instruments.
+
+9
+00:00:35,480 --> 00:00:38,820
+This view helps to identify relationships between assets,
+
+10
+00:00:39,100 --> 00:00:41,480
+for example how stocks behave relative to each
+
+11
+00:00:41,480 --> 00:00:42,960
+other and other benchmarks.
+
+12
+00:00:45,140 --> 00:00:51,240
+Here in benchmark metrics, stocks like Microsoft and
+
+13
+00:00:51,240 --> 00:00:55,460
+Nike are compared against benchmarks such as SPY,
+
+14
+00:00:55,820 --> 00:01:00,340
+QQQ, and GLD using beta, volatility, and other
+
+15
+00:01:00,340 --> 00:01:00,800
+metrics.
+
+16
+00:01:03,360 --> 00:01:07,300
+Each metric includes a short explanation making the
+
+17
+00:01:07,300 --> 00:01:11,540
+dashboard useful also for learning and decision support.
+
+18
+00:01:12,620 --> 00:01:15,100
+The project is built with Python and Streamlit
+
+19
+00:01:15,100 --> 00:01:17,400
+and designed as a base for future AI
+
+20
+00:01:17,400 --> 00:01:18,380
+-driven insights.

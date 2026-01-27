@@ -1,8 +1,10 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from pathlib import Path
 
 # ---- Plausible Analytics ----
-components.html("""
+components.html(
+    """
 <!-- Privacy-friendly analytics by Plausible -->
 <script async src="https://plausible.io/js/pa-lJvFYtpXWgW5ZoApoiuXh.js"></script>
 <script>
@@ -10,13 +12,18 @@ components.html("""
   plausible.init = plausible.init || function(i) { plausible.o = i || {} };
   plausible.init()
 </script>
-""", height=0)  # height=0, żeby nie zajmował miejsca w UI
+""",
+    height=0,
+)  # height=0, żeby nie zajmował miejsca w UI
 # ------------------------------
 
+DEMO_PATH = Path(__file__).parent / "streamlit_assets" / "demo_financial_dashboard.mp4"
+
+DEMO_PATH_SUBTITLES = Path(__file__).parent / "streamlit_assets" / "demo_financial_dashboard.srt"
 
 
-
-st.markdown("""
+st.markdown(
+    """
 # 📊 Financial Dashboard
 
 Welcome! This page provides an overview of the available modules in the application.
@@ -28,9 +35,22 @@ Contains general information about the project:
 - **About the author**
 - **Project README** and usage instructions
 - **BPMN diagram** presenting the system architecture
-
+- **Demo** below:
 ---
+"""
+)
+with st.expander("▶ Watch demo (1 min)", expanded=True):
+    if DEMO_PATH.exists():
+        st.video(DEMO_PATH,subtitles=DEMO_PATH_SUBTITLES)
+        st.caption(
+            "Short demo presenting multi-instrument selection, historical data analysis, correlations, and benchmark metrics."
+        )
+    else:
+        st.warning("Demo vidoe not available")
 
+
+st.markdown(
+    """
 ## 📈 Live Prices
 Real-time market prices provided by **OANDA**, representing CFD instruments across selected asset classes.
 
@@ -55,4 +75,5 @@ Detailed usage is described in the **README** section.
 A simple feedback form allowing users to:
 - Select a category
 - Send a free-form message to the author (optional)
-""")
+"""
+)
