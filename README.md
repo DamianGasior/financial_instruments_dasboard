@@ -1,6 +1,6 @@
   # Project Description
                 
-  The application gathers and analyzes market data for stocks, ETFs, cryptocurrencies, FX pairs, indices, commodities, and bond yields.
+  The application gathers and analyzes market data for stocks, ETFs, cryptocurrencies and FX pairs.
 
   For stocks and ETFs, the search is focused on instruments listed on US exchanges.
   For cryptocurrencies and FX pairs, the search scope is not limited to US markets.
