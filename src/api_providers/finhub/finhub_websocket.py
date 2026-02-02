@@ -8,12 +8,31 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from src.utils.streamlit_utils import key_validation
+from src.session_init import init_session_state
+init_session_state()
 
-
+# if "finhub_token" not in st.session_state:
+#     st.session_state.finhub_token = None
 
 FINHUB_TOKEN_PATH = Path(__file__).parent.parent.parent / "src" / ".env"
 key_name = "finhub_key"
 API_KEY = key_validation(FINHUB_TOKEN_PATH, key_name)
+
+if API_KEY is None:
+    API_KEY = key_validation(FINHUB_TOKEN_PATH, key_name)
+else : 
+    API_KEY
+
+
+# if not st.session_state.finhub_token :
+#     API_KEY = key_validation(FINHUB_TOKEN_PATH, key_name)
+#     st.session_state.finhub_token = API_KEY
+#     print(st.session_state.finhub_token)
+# elif st.session_state.finhub_token :
+#     st.session_state.finhub_token = API_KEY
+
+
+
 
 
 
@@ -117,6 +136,7 @@ def on_open(ws):
 def start_web_socket():
 
     global ws_connection
+
     tokenized_url = f"wss://ws.finnhub.io?token={API_KEY}"
 
     websocket.enableTrace(True)
