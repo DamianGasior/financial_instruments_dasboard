@@ -66,7 +66,6 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(
         "Prices",
         "Charts",
         "Basic symbol information",
-        # "Benchmark metrics",
     ]
 )
 with tab1:
@@ -113,11 +112,6 @@ with tab2:
                     )
                     st.stop()
                 elif symbols_response:
-                    # options=[]
-                    # for item in symbols_response:
-                    #     text=f'symbol : {item['symbol']}, instrument_name: {item['instrument_name']},exchange : {item['exchange']}'
-                    #     options=options.append(text)
-
                     selected = st.selectbox(
                         "Choose one of your instruments from the drop down list . Once you have the right instrument hit '+ Add symbol' ",
                         options=list(
@@ -349,7 +343,7 @@ if st.session_state.submit_button:
                                 show_correlation = st.sidebar.checkbox(
                                     "Correlation", value=False, key="show_correlation"
                                 )
-
+                            
     with tab4:
         if st.session_state.relative_comparison is False:
             for symbol in st.session_state.selected_symbols:
@@ -516,15 +510,18 @@ if st.session_state.submit_button:
             if st.session_state.show_correlation is True:
                 # df_list = symbol_df_builder.list_merger(stock_dict, my_symbols) # seem to be not required
                 # merge those by columns
-                if df_list:
-                    correlation_builder = multiple_data_frame.Dataframe_combine_builder.correlation_helper(
-                        df_list
-                    )
-                    st.markdown("Calculated correlation is:")
-                    st.dataframe(correlation_builder, width="stretch")
-                    with st.expander("Pearson Correlation (r) definition, click to expand"):
-                        st.write(
-                            """
+                single_stock_prices = st.session_state.multi_builder.get_the_right_dict(
+                    "single_prices"
+                )
+                correlation_example = numpy_calcs.DataFrameStore.correlation_for_df(
+                    st.session_state.merged_df_one
+                )
+
+                st.markdown("Calculated correlation is:")
+                st.dataframe(correlation_example, width="stretch")
+                with st.expander("Pearson Correlation (r) definition, click to expand"):
+                    st.write(
+                        """
                     What does it measure?
                     How strongly and linearly two instruments move together.
                     Range: from –1 to +1.
@@ -542,89 +539,10 @@ if st.session_state.submit_button:
                     → high correlation (e.g., 0.9)
                     But we still don’t know whether Apple increases more or less.
             """
-                        )
+                    )
 
-    # with tab4:
 
-    #     if st.session_state.submit_button:  # checking if submit button exists
-    #         with st.sidebar:
-    #             st.session_state.select_benchmarks = st.multiselect(
-    #                 "Select benchmarks",
-    #                 st.session_state.my_benchmarks,
-    #                 default=st.session_state.select_benchmarks,
-    #                 key="symbols_multiselect_benchmarks",
-    #             )
 
-    #     if (
-    #         st.session_state.submit_button
-    #         and len(st.session_state.selected_symbols) >= 1
-    #         and len(st.session_state.select_benchmarks) >= 1
-    #     ):
-    #         with st.sidebar:
-    #             st.title(":small[Benchmark metrics]")
-    #             if (
-    #                 st.session_state.submit_button
-    #                 and len(st.session_state.selected_symbols) >= 1
-    #             ):
-    #                 show_correlation_benchmark = st.sidebar.checkbox(
-    #                     "Correlation", value=False, key="show_correlation_benchmark"
-    #                 )
-
-    #     if st.session_state.show_correlation_benchmark is True:
-    #         my_symbols_merged = Dataframe_combine_builder.combined_lists(
-    #             st.session_state.select_benchmarks, st.session_state.selected_symbols
-    #         )
-    #         df_list_with_benchmark = symbol_df_builder.list_merger(
-    #             single_stock_prices, my_symbols_merged
-    #         )
-
-    #         # df_list_with_benchmark_returns=
-
-    #         df_list_returns = metrics_calcs.Underlying_metrics.price_chng_perct_for_list(
-    #             single_stock_prices, my_symbols_merged
-    #         )
-    #         # df_list_returns_reviewed=multiple_data_frame.Dataframe_combine_builder.correlation_helper()
-    #         if df_list_with_benchmark:
-    #             correlation_builder = (
-    #                 multiple_data_frame.Dataframe_combine_builder.correlation_helper(
-    #                     df_list_returns
-    #                 )
-    #             )
-    #             # correlation_builder = multiple_data_frame.Dataframe_combine_builder.correlation_helper(df_list_returns_reviewed)
-
-    #             st.markdown("Calculated correlation is:")
-    #             st.dataframe(correlation_builder, width="stretch")
-    #             with st.expander(" Pearson Correlation (r) definition, click to expand"):
-    #                 st.write(
-    #                     """
-    #                         What does it measure?
-    #                         How strongly and linearly two instruments move together.
-    #                         Range: from –1 to +1.
-
-    #                         +1 → they move in the same direction, perfectly
-
-    #                         0 → no linear relationship
-
-    #                         –1 → they move in opposite directions
-
-    #                         Most important: Correlation tells you only about the direction and consistency of movement, but not how many units something increases or decreases.
-
-    #                         Example:
-    #                         If the S&P 500 goes up by 1% → Apple often also goes up by around 1%
-    #                         → high correlation (e.g., 0.9)
-    #                         But we still don’t know whether Apple increases more or less.
-    #                 """
-    #                 )
-
-    # if st.session_state.submit_button and len(st.session_state.selected_symbols) >= 1:
-    #     show_worst_best = st.sidebar.checkbox("Worst and Best", value=False)
-    #     if show_worst_best is True:
-
-    # logic for Worst and Best Underlying
-
-    # adding some new  checklist button like "Visuals"
-    #   - normal price graphs
-    #   -
 
     # https://docs.streamlit.io/develop/api-reference/text/st.markdown
 
