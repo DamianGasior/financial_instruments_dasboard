@@ -27,7 +27,6 @@ class Underlying_metrics:
         self.underlying_df = underlying_df
         self.single_stock_data = {}
         self.dict_of_dict = {}
-        
 
     @property
     def return_for_symbol(self):
@@ -64,7 +63,6 @@ class Underlying_metrics:
         self.underlying_df = self.underlying_df.dropna()
         print(self.underlying_df)
         return self.underlying_df
-    
 
     def price_chng_perct_for_list(self):
         # return_for_symbol='daily_return_'+self.symbol
@@ -75,38 +73,6 @@ class Underlying_metrics:
         self.underlying_df = self.underlying_df.dropna()
         print(self.underlying_df)
         return self.underlying_df
-
-    def worst_and_best(self):
-
-        # row with the worst ( min) and the best (max)  performance, change percantage on the day
-        worst_idx = self.underlying_df[self.return_for_symbol].idxmin()
-        best_idx = self.underlying_df[self.return_for_symbol].idxmax()
-
-        # values for the row above with the actual numbers from column 'return', with the help of .loc ( locator?)I can get with the help of label for column and row
-        worst_val = self.underlying_df.loc[worst_idx, self.return_for_symbol]
-        best_val = self.underlying_df.loc[best_idx, self.return_for_symbol]
-
-        # the same as worst_idx and   best_idx , just assiging to variable with date
-        worst_date = worst_idx
-        best_date = best_idx
-
-        # price level for that specifc day, the best and the worst day
-        close_price_on_worst = self.underlying_df.loc[worst_idx, self.close]
-        close_price_on_best = self.underlying_df.loc[best_idx, self.close]
-
-        stocks = self.symbol
-
-        result_df = pd.DataFrame(
-            {
-                "Date": [worst_date, best_date],
-                # 'Symbol':[stocks,stocks],
-                self.close: [close_price_on_worst, close_price_on_best],
-                "Type": ["Worst", "Best"],
-                "Return": [worst_val, best_val],
-            }
-        )
-
-        return result_df
 
     def std_dev(self):
         # print('standard deviation')
@@ -129,26 +95,6 @@ class Underlying_metrics:
         return result_st_dev
 
     # this can be moved to some utils together with the same methods from mulitple_Data_frame file
-    # def add_to_dict(self, single_data_frame, stock_symbol):
-    #     # creating a copy so that in case are other operations done on single_data_frame, other columns added in this case I will see only prices
-    #     single_data_frame = single_data_frame.copy()
-    #     print(type(single_data_frame))
-
-    #     if isinstance(single_data_frame, pd.DataFrame):
-    #         self.single_stock_data[stock_symbol] = single_data_frame
-    #         print("len of add_to_dict1:", len(self.single_stock_data))
-    #         print(type(self.single_stock_data))
-    #         return self.single_stock_data
-
-    #     else:
-    #         self.single_data_frame = single_data_frame.to_dataframe()
-    #         self.single_stock_data[stock_symbol] = self.single_data_frame
-    #         print("len of add_to_dict2:", len(self.single_stock_data))
-    #         print(type(self.single_stock_data))
-
-    #         return self.single_stock_data
-
-    # this can be moved to some utils together with the same methods from mulitple_Data_frame file
     def add_dict_to_dict(self, name, symbol, value):
         if name not in self.dict_of_dict:
             self.dict_of_dict[name] = {}
@@ -163,7 +109,7 @@ class Underlying_metrics:
         return value
 
     # this can be moved to some utils together with the same methods from mulitple_Data_frame file
-    
+
     def get_the_right_dict(self, name):
         # print("Klucze dostępne:", self.dict_of_dict.keys())
         # print("values dostępne:", self.dict_of_dict.values())
@@ -190,27 +136,25 @@ class Underlying_metrics:
             self.dict_of_dict["single_timeframe_returns"].keys(),
         )
 
-
-
     @staticmethod
     def calc_correlation(concac_df):
         print(concac_df)
         corr_result = concac_df.corr()
         return corr_result
-    
+
     @staticmethod
     def price_chng_perct_for_list(stock_prices, list_of_symbols):
-        dummy_list=[]
+        dummy_list = []
 
         for sel_symbol in list_of_symbols:
-            dummy_df=pd.DataFrame() 
-            dummy_df=dummy_df.copy()
+            dummy_df = pd.DataFrame()
+            dummy_df = dummy_df.copy()
             asset_price = stock_prices.get(sel_symbol)
             print(asset_price)
             dummy_df.index = asset_price.index
             print(dummy_df.index)
-            dummy_df[sel_symbol]=asset_price[sel_symbol].pct_change().dropna()
-           
+            dummy_df[sel_symbol] = asset_price[sel_symbol].pct_change().dropna()
+
             print(dummy_df)
             dummy_df.dropna(inplace=True)
             print(dummy_df)
@@ -218,10 +162,3 @@ class Underlying_metrics:
 
         print(len(dummy_list))
         return dummy_list
-            
-
-
- 
-
-
-# df_with_calcs=Underlying_metrics()
