@@ -34,19 +34,11 @@ class Numpy_metrics_calcs:
 
     @staticmethod
     def to_numpy(incoming_dataframe):
-        # print("incoming_dataframe")
-        # print(incoming_dataframe)
-        # print(incoming_dataframe.dtypes)
-        # print(incoming_dataframe.columns)
-        # print(incoming_dataframe.index)
-        # print(incoming_dataframe.index.name)
-        # print("last")
-        # print(incoming_dataframe.info)
+
         incoming_dataframe_sorted = incoming_dataframe.sort_values("Date")
         price_array = incoming_dataframe_sorted.to_numpy()
         dates_price_array = incoming_dataframe_sorted.index.to_numpy()
-        # print(price_array)
-        # print(dates_price_array)
+
         return price_array, dates_price_array
 
     @classmethod
@@ -105,19 +97,29 @@ class Numpy_metrics_calcs:
         return st_dev_result
 
     @staticmethod
+    #daily returns calculated using arrays
     def daily_return(array):
-        print(array)
-        # tu trzeba zmienic tez
+        # print(array)
+        # print(type(array))
         daily_returns = np.diff(array) / array[:-1]
-        print(f"test:{type(daily_returns)}")
-        print(f"test2:{daily_returns.dtype}")
-        print(daily_returns)
+        # print(f"test:{type(daily_returns)}")
+        # print(f"test2:{daily_returns.dtype}")
+        # print(daily_returns)
+        return daily_returns
+
+    @staticmethod
+    #daily returns calculated using dataframes
+    def daily_return_df(df):
+        daily_returns = df.pct_change()
+        daily_returns = daily_returns.dropna()
+        # print(f"test:{type(daily_returns)}")
+        # print(daily_returns)
         return daily_returns
 
 
 class DataFrameStore:
     def __init__(self, df: pd.DataFrame | None = None):
-        # wewnętrzny DataFrame
+        # internal DataFrame
         self.df = df if df is not None else pd.DataFrame()
 
     def to_df(self) -> pd.DataFrame:
@@ -160,8 +162,13 @@ class DataFrameStore:
                     )
                 )
 
-                asset_return = self.daily_return_array_helper(asset_price_cut)
-                market_return = self.daily_return_array_helper(benchmark_price_cut)
+                print(benchmark_price_cut)
+                print(asset_price_cut)
+
+                asset_return = DataFrameStore.daily_return_array_helper(asset_price_cut)
+                market_return = DataFrameStore.daily_return_array_helper(
+                    benchmark_price_cut
+                )
 
                 cov = np.cov(asset_return, market_return, ddof=1)[0, 1]
                 print(cov)
@@ -188,16 +195,19 @@ class DataFrameStore:
                 if not asset_price.empty:
                     logging.info(asset_price.to_string())
                     logging.info(f"number of rows for {symbol} is {len(asset_price)}")
-
+                print(type(asset_price))
                 benchmark_price_cut, asset_price_cut = (
                     multiple_data_frame.Dataframe_combine_builder.date_index_verfication(
                         benchmark_price, asset_price
                     )
                 )
 
-                asset_return = self.daily_return_array_helper(asset_price_cut)
-
-                market_return = self.daily_return_array_helper(benchmark_price_cut)
+                asset_return = DataFrameStore.daily_return_array_helper(asset_price_cut)
+                print(asset_return)
+                market_return = DataFrameStore.daily_return_array_helper(
+                    benchmark_price_cut
+                )
+                print(market_return)
 
                 corr_stock_benchmark = np.corrcoef(asset_return, market_return)[0, 1]
                 print(corr_stock_benchmark)
@@ -220,15 +230,6 @@ class DataFrameStore:
                 r2 = corr_value**2
                 self.append(pd.DataFrame([{"symbol": symbol, "R2": r2}]))
         return self.df
-
-    def daily_return_array_helper(self, price_array):
-        asset_price_array, dates_array = Numpy_metrics_calcs.to_numpy(price_array)
-        asset_price_array = asset_price_array.flatten()
-        asset_price_return = Numpy_metrics_calcs.daily_return(asset_price_array)
-        asset_return_ndarray = (
-            asset_price_return.ravel()
-        )  # to get 1D vector instead of a matrix
-        return asset_return_ndarray
 
     def std_dev_to_df(self, *args, single_stock_prices):
         for selected_list in args:
@@ -271,9 +272,6 @@ class DataFrameStore:
                     pd.DataFrame([{"symbol": symbol, "sharpe_ratio": sharpe_ratio}])
                 )
         return self.df
-        # dostaje daily returns i licze ich mean
-        # dostaje standardowe odchylenie zwrotu i licze
-
 
     # method which  will serve as a pipeline
     def beta_and_volatility_metrics(
@@ -308,6 +306,28 @@ class DataFrameStore:
         self.r2_calc(sel_symbols, list_of_benchmarks)
 
         return self.df
+
+    @staticmethod
+    def daily_return_array_helper(price_array):
+        asset_price_return = Numpy_metrics_calcs.daily_return_df(price_array)
+        asset_price_array, dates_array = Numpy_metrics_calcs.to_numpy(
+            asset_price_return
+        )
+        asset_return_ndarray = (
+            asset_price_array.ravel()
+        )  # to use existing one instead of  creting a copy, but it looks its unnecessary
+        return asset_return_ndarray
+
+    @staticmethod
+    #calculating correlation using dataframe as input
+    def correlation_for_df(single_stock_prices):
+        single_stock_prices = single_stock_prices
+        logging.info(single_stock_prices.to_string())
+        logging.info(f"number of rows for {single_stock_prices} ")
+        returns_for_stocks = Numpy_metrics_calcs.daily_return_df(single_stock_prices) # dataframe used to calucate daily returns
+        corr_stock = returns_for_stocks.corr()
+        # print(corr_stock)
+        return corr_stock
 
     @staticmethod
     def plotly_chart_beta_volatility(incoming_dataframe, benchmark):
@@ -383,7 +403,9 @@ Size = R² → „Shows how much of the stock’s movement is explained by the m
 """
             )
 
-        with st.expander("Beta  and standard deviation(volatility) definitions, click to expand"):
+        with st.expander(
+            "Beta  and standard deviation(volatility) definitions, click to expand"
+        ):
             st.write(
                 """
 Beta – "how much a stock moves RELATIVE to the market"
@@ -522,7 +544,8 @@ Color	                 Sharpe Range	   Meaning
             """
             )
         with st.expander("R² (the coefficient of determination), click to expand"):
-            st.write("""
+            st.write(
+                """
 In finance, R² (the coefficient of determination) is a measure that shows how well an explanatory variable (e.g., a benchmark or index) explains the variability of an asset’s returns.
 
 In other words, it indicates what portion of a portfolio’s or stock’s return variability is explained by the variability of the benchmark.
@@ -544,7 +567,8 @@ Low Beta
 - 1 − R² = 0.80 → 80% of the variability comes from other factors.
 
 The stock moves relatively independently of the market.
-                         """)
+                         """
+            )
 
 
 @staticmethod

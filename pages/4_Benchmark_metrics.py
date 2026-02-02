@@ -133,6 +133,8 @@ if beta_volatility is True:
         )  # with the help of .df getting access to the class attribute
         numpy_calcs.DataFrameStore.beta_definition()
 
+    
+
     with tab1:
         st.session_state.df_risk_info.beta_and_volatility_metrics(
             st.session_state.selected_symbols,
@@ -146,6 +148,9 @@ if beta_volatility is True:
         numpy_calcs.DataFrameStore.plotly_chart_beta_volatility(plotly_df, symbol_1)
         st.dataframe(st.session_state.df_risk_info.df)
         numpy_calcs.DataFrameStore.beta_definition()
+
+   
+
 
     # with tab2:
     #     st.session_state.df_risk_info.beta_and_volatility_metrics(
@@ -173,4 +178,4 @@ if beta_volatility is True:
         plotly_df = st.session_state.df_risk_info.to_df()
         numpy_calcs.DataFrameStore.plotly_chart_beta_volatility(plotly_df, symbol_3)
         st.dataframe(st.session_state.df_risk_info.df)
-        numpy_calcs.DataFrameStore.beta_definition()
+        numpy_calcs.DataFrameStore.beta_definition()        

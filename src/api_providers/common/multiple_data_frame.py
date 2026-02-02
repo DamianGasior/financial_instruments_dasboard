@@ -120,25 +120,6 @@ class Dataframe_combine_builder:
 
         self.add_dict_to_dcit(multiple_dict, "single_prices")
 
-    #  #create a method which takes all the ifnromation from the list  and does combine that into one.
-    #     def multiple_data_frame_creator(self,name_of_set):
-    #        #this method allows to put all dataframes into a dictionary, you can search in the dict using values like 'worst_and_best'
-    #     #    print('MultipleDataFrame')  # for log  dev purpose
-    #        self.final_df=pd.concat(self.frames,axis=1)
-    #        self.set_of_df[name_of_set]= self.final_df
-    #        print(type(self.final_df))
-    #        print(self.final_df)
-    #        return self.final_df
-
-    #     def attach_df_to_list_concac(self, value):
-    #         #this method allows to put all dataframes into a dictionary, you can search in the dict using values like 'worst_and_best'
-    #         #    print('MultipleDataFrame')  # for log  dev purpose
-    #         self.single_df=pd.concat(value, axis=1)
-    #         # self.set_of_df[name_of_set]= self.final_df
-    #         print(type(self.final_df))
-    #         print(self.single_df)
-    #         return self.final_df
-
     def show_content(self):
         print(
             f"key length : {len(self.dict_of_dict.keys())}, value length : {len(self.dict_of_dict.values())}"
@@ -256,8 +237,6 @@ class Dataframe_combine_builder:
             print(i.index.value_counts().head())
 
         merged_df_sec = Dataframe_combine_builder.list_concacenate(df_list)
-
-        print("test12345")
         print(type(merged_df_sec))
         print(merged_df_sec)
         merged_df_sec = merged_df_sec[0]
