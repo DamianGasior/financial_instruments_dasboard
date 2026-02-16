@@ -305,6 +305,7 @@ if st.session_state.submit_button:
                     st.session_state.single_stock_prices, my_symbols
                 )
                 print(df_list)
+                print(type(df_list))
                 print("test_df_list")
 
                 # merge those by columns
